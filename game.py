@@ -1,8 +1,8 @@
 import random
 
 def getKey():
-	k = str(raw_input("Direction: "));
 	while(1):
+		k = str(raw_input("Next: "));
 		if(k=='w' or k=='W'):
 			return getDirection('up');
 		elif k=='a' or k=='A':
@@ -21,8 +21,8 @@ def getDirection(x):
 	}[x];
 
 def add_random(grid):
-	indices = []
-	n = len(grid)
+	indices = [];
+	n = len(grid);
 	for y in range(n):
 		for x in range(n):
 			if(grid[y][x] == 0 ):
@@ -32,27 +32,28 @@ def add_random(grid):
 		r = indices[random.randint(0,len(indices)-1)]
 		value = random.randint(1,2)*2
 		grid[r[1]][r[0]]= value
-		return grid,False
-	else:
-		return grid,True
+		return grid;
 
 
-def new_grid(size,value=0):
-
+def emptyGrid(size,value=0):
 	grid = []
 	for i in range(size):
 		grid.append([value] * size)
 
-	grid,blank = add_random(grid)
-	grid,blank = add_random(grid)
-
+	grid = add_random(grid)
+	grid = add_random(grid)
 
 	return grid
 
-def nextMove(grid, direction, score):
-	halt = False
+def fullGrid(size):
+	grid= [];
+	for i in range(size):
+		grid.append([size * i + j + 1 for j in range(size)]);
+	return grid;
 
-	n = len(grid)
+
+def moveLogic(grid,direction,score):
+	n = len(grid);
 
 	if direction[0]!=0:
 		d=direction[0]
@@ -60,14 +61,15 @@ def nextMove(grid, direction, score):
 		d=direction[1]
 		grid = map(list,zip(*grid))
 
+	valid = False;
+	full = True;
 
 	for y in range(n):
-		r = grid[y];
+		r = row = grid[y];
 		r = filter(lambda a:a!=0, r);
 		x = 0;
 		
 		while x<len(r)-1:
-			print x;
 			if(r[x] == r[x+1]):
 				r[x] = reduce(lambda x,y: x+y,r[x:x+2]);
 				r[x+1] = 0;
@@ -75,27 +77,49 @@ def nextMove(grid, direction, score):
 			x=x+1;
 
 		r = filter(lambda a:a!=0, r);
-		row = [0 for i in range(n-len(r))];
+		zeroes = [0 for i in range(n-len(r))];
 		if(d==1):
-			grid[y] =  row + r;
+			grid[y] =  zeroes + r;
 		elif(d==-1):
-			grid[y] = r + row;
+			grid[y] = r + zeroes;
+
+		if(row != grid[y]):
+			valid=True;
+			if(len(filter(lambda a:a==0, grid[y]))):
+				full=False;
 
 
 
 	if direction[1]!=0:
-		d=direction[1]
-		grid = map(list,zip(*grid))
+		d=direction[1];
+		grid = map(list,zip(*grid));
+
+	return grid,full,valid;
 
 
-	grid,halt = add_random(grid)
 
-	if halt==True:
-		print "Game Over"
+def nextMove(grid, direction, score):
+	halt = False
+	n = len(grid);
 
-	for y in range(n):
-		print grid[y]
-	return grid,halt
+	grid,full,valid = moveLogic(grid,direction,score);
+	
+	print "f", full;
+
+	if(not full and valid):
+		grid = add_random(grid);
+
+	halt = False;
+	if(full):		# Check for game end
+		halt = True;
+		for i in range(n):
+			for j in range(n-1):
+				if(grid[j][i] == grid[j+1][i] or grid[i][j] == grid[i][j+1]):
+					halt = False;
+					break;
+
+
+	return grid,halt,valid,full;
 
 
 def grid_to_input(grid):
@@ -107,13 +131,13 @@ def grid_to_input(grid):
 def printGrid(grid):
 	for i in range(len(grid)):
 		print grid[i];
-	print " yo";
 
-grid = new_grid(4);
+grid = emptyGrid(4);
 printGrid(grid);
-
 
 while(1):
 	direction = getKey();
 	if(direction):
-		grid,halt = nextMove(grid,direction,0);
+		grid,halt,valid,_ = nextMove(grid,direction,0);
+		printGrid(grid);
+		print "Valid? ", valid, "\tHalt? ", halt;
