@@ -1,5 +1,25 @@
 import random
 
+def getKey():
+	k = str(raw_input("Direction: "));
+	while(1):
+		if(k=='w' or k=='W'):
+			return getDirection('up');
+		elif k=='a' or k=='A':
+			return getDirection('left');
+		elif k=='s' or k=='S':
+			return getDirection('down');
+		elif k=='d' or k=='D':
+			return getDirection('right');
+
+def getDirection(x):
+	return {
+		'up': [0,-1],
+		'down': [0,1],
+		'right': [1,0],
+		'left': [-1,0]
+	}[x];
+
 def add_random(grid):
 	indices = []
 	n = len(grid)
@@ -29,8 +49,7 @@ def new_grid(size,value=0):
 
 	return grid
 
-
-def move(grid, direction, score):
+def nextMove(grid, direction, score):
 	halt = False
 
 	n = len(grid)
@@ -41,33 +60,32 @@ def move(grid, direction, score):
 		d=direction[1]
 		grid = map(list,zip(*grid))
 
-	if d==1:
-		for y in range(n):
-			for x in range(n-1,0,-1):
-				row = grid[y]
-				if row[x] == row[x-1] and row[x]!=0:
-					row[x] = row[x]*2
-					row[x-1] = 0
-			row = filter(lambda a:a!=0,row)
-			row = [0]*(len(grid[y]) - len(row)) + row
-			grid[y] = row
-	elif d == -1:
-		for y in range(n):
-			for x in range(0,n-1,1):
-				row = grid[y]
-				if row[x] == row[x+1] and row[x]!=0:
-					row[x] = row[x]*2
-					row[x+1] = 0
-			row = filter(lambda a:a!=0,row)
-			row = row+[0]*(len(grid[y]) - len(row))
-			grid[y] = row
+
+	for y in range(n):
+		r = grid[y];
+		r = filter(lambda a:a!=0, r);
+		x = 0;
+		
+		while x<len(r)-1:
+			print x;
+			if(r[x] == r[x+1]):
+				r[x] = reduce(lambda x,y: x+y,r[x:x+2]);
+				r[x+1] = 0;
+				x=x+1;
+			x=x+1;
+
+		r = filter(lambda a:a!=0, r);
+		row = [0 for i in range(n-len(r))];
+		if(d==1):
+			grid[y] =  row + r;
+		elif(d==-1):
+			grid[y] = r + row;
+
+
 
 	if direction[1]!=0:
 		d=direction[1]
 		grid = map(list,zip(*grid))
-	#if direction[1]==1:
-	#	for x in range(n):
-
 
 
 	grid,halt = add_random(grid)
@@ -86,4 +104,16 @@ def grid_to_input(grid):
 		arr = arr + grid[i]
 	return arr
 
-grid = new_grid(4)
+def printGrid(grid):
+	for i in range(len(grid)):
+		print grid[i];
+	print " yo";
+
+grid = new_grid(4);
+printGrid(grid);
+
+
+while(1):
+	direction = getKey();
+	if(direction):
+		grid,halt = nextMove(grid,direction,0);
