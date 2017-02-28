@@ -158,8 +158,8 @@ default = [
 	[0, 0, 0, 0]
 ]
 
-game = Game(4)
-game.printgrid()
-
-print game.acceptinput(direction=[ 0.99990205,  0.99985169,  0.99952689,  0.99978909])
-game.printgrid()
+# game = Game(4)
+# game.printgrid()
+#
+# print game.acceptinput(direction=[ 0.99990205,  0.99985169,  0.99952689,  0.99978909])
+# game.printgrid()
