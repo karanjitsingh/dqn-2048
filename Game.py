@@ -33,6 +33,7 @@ class Game:
 
 	def __init__(self, size, grid=[]):
 		self.grid = grid
+		self.score = 0
 		if not grid:
 			self.emptygrid(size)
 
@@ -62,14 +63,14 @@ class Game:
 		else:
 			direction = getkey()
 
-		halt, valid, full = self.nextmove(direction, 0)
+		halt, valid, full = self.nextmove(direction)
 
 		if verbose:
 			self.printgrid()
 			print "Valid? ", valid, "\tHalt? ", halt
-		return valid, full, halt
+		return valid, full, halt, self.score
 
-	def movelogic(self, direction, score):
+	def movelogic(self, direction):
 		n = len(self.grid)
 
 		if direction[0] != 0:
@@ -93,7 +94,9 @@ class Game:
 			x = 0
 
 			while x < len(r) - 1:
+				# Merge
 				if r[x] == r[x + 1]:
+					self.score += r[x]*2
 					r[x] = reduce(lambda x, y: x + y, r[x:x + 2])
 					r[x + 1] = 0
 					x += 1
@@ -121,10 +124,10 @@ class Game:
 
 		return full, valid
 
-	def nextmove(self, direction, score):
+	def nextmove(self, direction):
 
 		n = len(self.grid)
-		full, valid = self.movelogic(direction, score)
+		full, valid = self.movelogic(direction)
 
 		if not full and valid:
 			self.add_random()
@@ -151,15 +154,16 @@ class Game:
 			print self.grid[i]
 
 
-default = [
-	[0, 0, 0, 0],
-	[4, 4, 4, 0],
-	[0, 0, 0, 0],
-	[0, 0, 0, 0]
-]
-
+# default = [
+# 	[0, 0, 0, 0],
+# 	[4, 4, 4, 0],
+# 	[0, 0, 0, 0],
+# 	[0, 0, 0, 0]
+# ]
+#
 # game = Game(4)
 # game.printgrid()
 #
-# print game.acceptinput(direction=[ 0.99990205,  0.99985169,  0.99952689,  0.99978909])
-# game.printgrid()
+# while 1:
+# 	print game.acceptinput()
+# 	game.printgrid()
