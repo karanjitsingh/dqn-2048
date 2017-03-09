@@ -1,6 +1,8 @@
 import numpy as np
 import ActivationFunctions
-import Game
+from Game import State
+from Game import Game
+
 
 
 class NeuralNetwork:
@@ -41,14 +43,11 @@ class NeuralNetwork:
 
 		return output
 
-	def reward(self, input, confidence, output, move_score, valid):
-		if valid:
-			return move_score
-		else:
-			return -10
+	@staticmethod
+	def reward(fromstate, tostate):
+		return tostate.score - fromstate.score
 
 	def train(self, game, verbose=False, log=False):
-
 		halt = False
 		i = 0
 
@@ -57,34 +56,39 @@ class NeuralNetwork:
 			print "i: ", i
 			print game.printgrid(), "\n"
 
-		while not halt and i < 10:
+		while not halt and i < 1024:
 			i += 1
+
+			currstate = game.currState
+
 			input = game.grid_to_input()
+			output = self.propagate(input).tolist()
+			nextstate = game.transition(direction=output)
 
-			confidence = self.propagate(input).tolist()
-			move_score = game.score
+			reward = NeuralNetwork.reward(currstate, nextstate)
 
-			valid, full, halt, score = game.acceptinput(direction=confidence)
+			score = nextstate.score
+			qset = [NeuralNetwork.reward(nextstate, Game.get_next_state(nextstate, Game.getdirection(j))) for j in range(4)]
 
-			move_score = score - move_score
-			output = game.grid_to_input()
-
-			reward = self.reward(input, confidence, output, move_score, valid)
-
-			''' Discounted Reward '''
-
+			output = self.propagate(game.grid_to_input()).tolist()
+			qmax = (max(qset), qset.index(max(qset)))
+			index = output.index(max(output))
+			qsel = (qset[index], index)
 
 			if verbose:
 				print "i:", i
 				game.printgrid()
-				print "Score: ", game.score, "\n"
+				print "Reward: ", reward
+				print "Score: ", score
+				print "qsel: ", qsel, " qmax: ", qmax
+				print ""
 
-		if verbose:
-			print "Final Network:"
-			self.print_network()
+		# if verbose:
+		# 	print "Final Network:"
+		# 	self.print_network()
 
-# layers = [16,16,16,16,16,4]
-# nn = NeuralNetwork(layers)
-# nn.print_network(layers=False)
-#
-# print nn.propagate([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+
+game = Game(4)
+nn = NeuralNetwork([16, 16, 16, 16, 4])
+nn.train(game, verbose=True)
+
