@@ -1,3 +1,4 @@
 *.pyc
 res/*
 pytest.py
+.idea/*

@@ -101,7 +101,7 @@ class NeuralNetwork:
 
 		for i in range(len(delta)):
 			activation_3d = np.array([np.diag([activation[i][k]] * delta[i][0].size) for k in range(activation[i].size)])
-			e_trace[i] = np.matmul(delta[i],activation_3d)
+			e_trace[i] = np.matmul(delta[i], activation_3d)
 
 
 	def train(self, game, verbose=False, log=False, total=1):
