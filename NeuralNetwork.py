@@ -34,6 +34,12 @@ class NeuralNetwork:
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			self.network.append(np.transpose(singlelayer))
 
+		# Weights are of the form wij from layer j to layer i
+		# w11 w12 w13
+		# w21 w22 w23
+		# w31 w32 w33
+		# print self.network
+
 	@staticmethod
 	def reward(fromstate, tostate):
 		if not tostate.valid:
@@ -58,7 +64,7 @@ class NeuralNetwork:
 		output = np.array([])
 		multioutput = []
 		net = []
-		activation=[]
+		activation = []
 		for i in range(len(self.layers)):
 			output = np.array([])
 			for x in range(self.layers[i]):
@@ -73,24 +79,42 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def tdlearn(self, qsel, reward, game):			# Temporal difference back propagation
+	def tdlearn(self, qsel, reward, e_trace, game):			# Temporal difference back propagation
 		activation = self.propagate(game.grid_to_input(), True)
 		qset = activation[-1].tolist()
 
 		qmax = (max(qset), qset.index(max(qset)))
 		td_error = reward + gamma * qmax[0] - qsel[0]
 
-		delta = [np.zeros(i.shape) for i in activation]
-		delta[-1] = activation[-1]*(1-activation[-1])		# del-ii
-		
-		for i in range(self.depth-2, -1, -1):
-			delta[i] = delta[i+1]
+		# Calculate deltas
+		delta = []
+		delta.insert(0, np.diag(map(lambda x: x*(1-x), activation[-1])))
+
+		for i in range(len(self.layers)-2, -1, -1):
+			del_activation_matrix = np.diag(map(lambda x: x*(1-x), activation[i]))
+			weights = self.network[i+1];
+			product = np.matmul(del_activation_matrix, weights.transpose())
+			delta_i = np.matmul(product, delta[0])
+			delta.insert(0, delta_i)
+
+		for i in range(len(delta)):
+			print "layer", i
+			print "delta"
+			print delta[i]
+			print "activation matrix"
+			activation_3d = np.array([np.diag(activation[i][k]) for k in range(activation[i].size)])
+			print activation_3d.shape
 
 
 	def train(self, game, verbose=False, log=False, total=1):
+		# Create empty e-trace
+		e_trace = []
+		output_neurons = self.layers[-1]
+		for i in range(len(self.layers)):
+			e_trace.append(np.zeros((output_neurons,) + self.network[i].shape))
+
 		halt = False
 		i = 0
-
 		if verbose:
 			print "Starting simulation..."
 			print "i: ", i
@@ -113,7 +137,8 @@ class NeuralNetwork:
 			reward = NeuralNetwork.reward(state, next_state)
 			state = game.currState
 
-			self.tdlearn(qsel, reward, game)
+			# TD Learning
+			self.tdlearn(qsel, reward, e_trace, game)
 
 			if verbose:
 				print "i:", i
@@ -122,16 +147,11 @@ class NeuralNetwork:
 				print "Score: ", game.currState.score
 				print ""
 
-			# TD Learning
-
-
-
-		# if verbose:
-		# 	print "Final Network:"
-		# 	self.print_network()
-
+			# if verbose:
+			# 	print "Final Network:"
+			# 	self.print_network()
 
 game = Game(4)
-nn = NeuralNetwork([16, 16, 16, 16, 4])
+nn = NeuralNetwork([16, 16, 4])
 nn.train(game, verbose=True)
 
