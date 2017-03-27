@@ -79,7 +79,7 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def tdlearn(self, qsel, reward, e_trace, game):			# Temporal difference back propagation
+	def tdlearn(self, qsel, reward, e_trace, game, input):			# Temporal difference back propagation
 		activation = self.propagate(game.grid_to_input(), True)
 		qset = activation[-1].tolist()
 
@@ -97,13 +97,11 @@ class NeuralNetwork:
 			delta_i = np.matmul(product, delta[0])
 			delta.insert(0, delta_i)
 
+		activation.insert(0, np.array(input))
+
 		for i in range(len(delta)):
-			print "layer", i
-			print "delta"
-			print delta[i]
-			print "activation matrix"
-			activation_3d = np.array([np.diag(activation[i][k]) for k in range(activation[i].size)])
-			print activation_3d.shape
+			activation_3d = np.array([np.diag([activation[i][k]] * delta[i][0].size) for k in range(activation[i].size)])
+			e_trace[i] = np.matmul(delta[i],activation_3d)
 
 
 	def train(self, game, verbose=False, log=False, total=1):
@@ -133,12 +131,13 @@ class NeuralNetwork:
 
 			qsel = (qset[index], index)
 
+			input = game.grid_to_input()
 			next_state = game.transition(direction=qset)
 			reward = NeuralNetwork.reward(state, next_state)
 			state = game.currState
 
 			# TD Learning
-			self.tdlearn(qsel, reward, e_trace, game)
+			self.tdlearn(qsel, reward, e_trace, game, input)
 
 			if verbose:
 				print "i:", i
