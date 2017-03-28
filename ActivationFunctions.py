@@ -1,5 +1,4 @@
-from math import *
-
+from numpy import exp
 
 # Sigmoid function
 class Sigmoid(float or list):
