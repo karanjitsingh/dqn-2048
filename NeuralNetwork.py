@@ -20,17 +20,18 @@ class NeuralNetwork:
 
 		self.layers = layers
 		self.network = []
-		self.biases = np.random.rand(len(layers))
+		self.biases = np.random.rand(len(layers)) * 2 - 1
 		self.aFn = afn
 		self.depth = len(layers)
 
 		# Weights for input layer (layer 0)
-		self.network.append(np.random.rand(layers[0], layers[0]))
+		self.network.append(np.random.rand(layers[0], layers[0])*2 - 1)
 
 		for i in range(self.depth - 1):
 			singlelayer = np.array([])
 			for x in range(layers[i]):
-				rand = np.random.rand(layers[i + 1])
+				rand = np.random.rand(layers[i + 1]) * 2 -1
+
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			self.network.append(np.transpose(singlelayer))
 
@@ -60,7 +61,7 @@ class NeuralNetwork:
 
 	# Feedforward propagation
 	def propagate(self, input, returnActivations=False):
-		inputmatrix = np.array(input)
+		inputmatrix = np.array(self.aFn(input))
 		output = np.array([])
 		multioutput = []
 		net = []
@@ -97,19 +98,21 @@ class NeuralNetwork:
 			delta_i = np.matmul(product, delta[0])
 			delta.insert(0, delta_i)
 
+		input = self.aFn(input)
 		activation.insert(0, np.array(input))
 
-		for i in range(len(delta)):
+		for i in range(len(delta)-1, -1, -1):
 			activation_3d = np.array([np.diag([activation[i][k]] * delta[i][0].size) for k in range(activation[i].size)])
-			e_trace[i] = np.matmul(delta[i], activation_3d)
+			e_trace[i] = np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
 
+		print e_trace[0][0][0]
 
 	def train(self, game, verbose=False, log=False, total=1):
 		# Create empty e-trace
 		e_trace = []
 		output_neurons = self.layers[-1]
 		for i in range(len(self.layers)):
-			e_trace.append(np.zeros((output_neurons,) + self.network[i].shape))
+			e_trace.append(np.zeros(self.network[i].shape[::-1] + (output_neurons,)))
 
 		halt = False
 		i = 0
