@@ -20,7 +20,7 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.3			# learning rate
+		self.alpha = 0.6			# learning rate
 		self.epsilon = Gradients.exponenetial
 
 		# Game settings
@@ -247,6 +247,11 @@ class NeuralNetwork:
 		stat['score'] = game.currState.score
 		stat['steps'] = i
 		stat['invalid'] = invalid['count']
+		stat['grid'] = game.currState.grid
+
+		game.printgrid()
+		print
+
 		return stat
 
 	def batchplay(self, n=1, progress=False, verbose=False):
@@ -255,11 +260,15 @@ class NeuralNetwork:
 			'maxTileCount': {},
 			'avgScore': 0,
 			'avgSteps': 0,
-			'avgInvalid': 0
+			'avgInvalid': 0,
 		}
+
+		games = []
 
 		for i in range(n):
 			stat = self.play(verbose=verbose)
+
+			games.append(stat)
 
 			if str(stat['maxTile']) in avgstat['maxTileCount'].keys():
 				avgstat['maxTileCount'][str(stat['maxTile'])] += 1
@@ -276,7 +285,7 @@ class NeuralNetwork:
 				p.update(i+1)
 		return avgstat
 
-nn = NeuralNetwork([16, 4], 4)
-print json.dumps(nn.batchplay(n=1000, progress=True), indent=2)
-nn.train(verbose=False, progress=True, save=True, maxepochs=100)
-print json.dumps(nn.batchplay(n=1000, progress=True), indent=2)
+nn = NeuralNetwork([16, 16, 4], 4)
+print json.dumps(nn.batchplay(n=100), indent=2)
+nn.train(verbose=False, progress=True, save=False, maxepochs=1000)
+print json.dumps(nn.batchplay(n=100), indent=2)
