@@ -1,11 +1,14 @@
+from components.ProgressBar import ProgressBar
+
+from Game import State
+from Game import Game
+from os import listdir
+
 import numpy as np
 import ActivationFunctions
 import random
-from Game import State
-from Game import Game
 import datetime
 import pickle
-from os import listdir
 import json
 
 
@@ -17,8 +20,8 @@ def normalize(v):
 class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
-		self.gamma = 0.8		# Discounted reward constant
-		self.alpha = 0.7		# Lambda / eligibility scale
+		self.gamma = 0.8			# Discounted reward constant
+		self.alpha = 0.7			# Lambda / eligibility scale
 		self.epsilon = 0.674		# Epsilon greedy selection
 		# self.epsilon = lambda step: 0.99 * np.exp(np.log(0.05) * step)			# Decreasing exponential epsilon
 
@@ -108,11 +111,11 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def tdlearn(self, qsel, reward, del_w, game, input):			# Temporal difference back propagation
+	def tdlearn(self, qset, reward, del_w, game, input):			# Temporal difference back propagation
 		activation = self.propagate(game.grid_to_input(), True)
-		qset = activation[-1].tolist()
+		qmax = max(activation[-1].tolist())
 
-		td_error = reward + self.gamma * np.array(qset) - qsel[0]
+		td_error = reward + self.gamma * np.array(qmax) - qset
 
 		# Calculate deltas
 		delta = []
@@ -159,7 +162,6 @@ class NeuralNetwork:
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
 			halt = False
-			i = 0
 			if verbose:
 				print "New game..."
 				print "i: ", i
@@ -167,6 +169,7 @@ class NeuralNetwork:
 
 			state = game.currState
 
+			i = 0
 			while not halt:
 				i += 1
 				qset = self.propagate(game.grid_to_input()).tolist()
@@ -176,19 +179,17 @@ class NeuralNetwork:
 				else:
 					index = qset.index(max(qset))		# Choose policy action
 
-				qsel = (qset[index], index)
-
 				# print qset
 
 				input = normalize(game.grid_to_input())
 
-				next_state = game.transition(direction=qsel[1])
+				next_state = game.transition(direction=index)
 				reward = NeuralNetwork.reward(state, next_state)
 				state = game.currState
 				halt = state.halt
 
 				# TD Learning
-				self.tdlearn(qsel, reward, del_w, game, input)
+				self.tdlearn(qset, reward, del_w, game, input)
 
 				if verbose:
 					print "i:", i
@@ -199,7 +200,9 @@ class NeuralNetwork:
 			epochs += 1
 
 			if progress:
-				print "Epochs ", epochs, "/", maxepochs
+				if epochs == 1:
+					p = ProgressBar(40, maxepochs, "Epochs", verbose)
+				p.update(epochs)
 
 		if save:
 			self.stats['trainingEpochs'] += maxepochs
@@ -250,11 +253,13 @@ class NeuralNetwork:
 
 	def batchplay(self, n=1, progress=False, verbose=False):
 		avgstat = {
+			'totalGames': n,
 			'maxTileCount': {},
 			'avgScore': 0,
 			'avgSteps': 0,
 			'avgInvalid': 0
 		}
+
 		for i in range(n):
 			stat = self.play(verbose=verbose)
 
@@ -263,15 +268,18 @@ class NeuralNetwork:
 			else:
 				avgstat['maxTileCount'].update({str(stat['maxTile']): stat['maxTile']})
 
-			avgstat['avgScore'] += stat['score']/n
-			avgstat['avgSteps'] += stat['steps']/n
-			avgstat['avgInvalid'] += stat['invalid']/n
+			avgstat['avgScore'] += stat['score']/float(n)
+			avgstat['avgSteps'] += stat['steps']/float(n)
+			avgstat['avgInvalid'] += stat['invalid']/float(n)
 
 			if progress:
-				print "Game ", i, "/", n
+				if i == 0:
+					p = ProgressBar(40, n, "Games", verbose)
+				p.update(i+1)
+
 		return avgstat
 
 nn = NeuralNetwork([16, 4], 4)
+print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
 nn.train(verbose=False, progress=True, save=True, maxepochs=1000)
-# nn = NeuralNetwork.load()
 print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
