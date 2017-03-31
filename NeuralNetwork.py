@@ -9,10 +9,6 @@ from os import listdir
 import json
 
 
-def epsilon(step):											# Epsilon-greedy selection
-	return 0.99 * np.exp(np.log(0.05) * step)
-
-
 def normalize(v):
 	v = np.array(v)
 	return (v/np.sqrt(np.sum(v*v))).tolist()
@@ -21,8 +17,10 @@ def normalize(v):
 class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
-		self.gamma = 0.9  # Discounted reward constant
-		self.alpha = 0.9  # Lambda / eligibility scale
+		self.gamma = 0.8		# Discounted reward constant
+		self.alpha = 0.7		# Lambda / eligibility scale
+		self.epsilon = 0.674		# Epsilon greedy selection
+		# self.epsilon = lambda step: 0.99 * np.exp(np.log(0.05) * step)			# Decreasing exponential epsilon
 
 		# Game settings
 		self.gamedim = gamedim
@@ -66,7 +64,8 @@ class NeuralNetwork:
 			f = path
 
 		with open(f, "rb") as input:
-			return pickle.load(input)
+			nn = pickle.load(input)
+			print "NN Stats\n", nn.stats
 
 	@staticmethod
 	def reward(fromstate, tostate):
@@ -172,7 +171,7 @@ class NeuralNetwork:
 				i += 1
 				qset = self.propagate(game.grid_to_input()).tolist()
 
-				if random.random() < 0.5:
+				if random.random() < self.epsilon:
 					index = random.randint(0, 3)		# Choose random action
 				else:
 					index = qset.index(max(qset))		# Choose policy action
