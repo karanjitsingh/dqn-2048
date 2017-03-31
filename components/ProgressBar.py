@@ -23,3 +23,6 @@ class ProgressBar:
 		sys.stdout.flush()
 		self.lastline = line
 
+	def __del__(self):
+		sys.stdout.write("\n")
+

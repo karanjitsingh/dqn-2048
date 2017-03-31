@@ -264,9 +264,9 @@ class NeuralNetwork:
 			stat = self.play(verbose=verbose)
 
 			if str(stat['maxTile']) in avgstat['maxTileCount'].keys():
-				avgstat['maxTileCount'][str(stat['maxTile'])] += stat['maxTile']
+				avgstat['maxTileCount'][str(stat['maxTile'])] += 1
 			else:
-				avgstat['maxTileCount'].update({str(stat['maxTile']): stat['maxTile']})
+				avgstat['maxTileCount'].update({str(stat['maxTile']): 1})
 
 			avgstat['avgScore'] += stat['score']/float(n)
 			avgstat['avgSteps'] += stat['steps']/float(n)
@@ -276,10 +276,11 @@ class NeuralNetwork:
 				if i == 0:
 					p = ProgressBar(40, n, "Games", verbose)
 				p.update(i+1)
-
 		return avgstat
 
 nn = NeuralNetwork([16, 4], 4)
-print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
-nn.train(verbose=False, progress=True, save=True, maxepochs=1000)
-print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
+print json.dumps(nn.batchplay(n=1000, progress=True), indent=2)
+print nn.network
+nn.train(verbose=False, progress=True, save=True, maxepochs=3000)
+print nn.network
+print json.dumps(nn.batchplay(n=1000, progress=True), indent=2)
