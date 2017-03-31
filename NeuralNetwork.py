@@ -1,15 +1,14 @@
-from components.ProgressBar import ProgressBar
-
-from Game import State
-from Game import Game
-from os import listdir
-
-import numpy as np
-import ActivationFunctions
-import random
 import datetime
-import pickle
 import json
+import pickle
+import random
+import numpy as np
+
+from os import listdir
+from Game import Game
+from components.ProgressBar import ProgressBar
+from functions import ActivationFunctions
+from functions import Gradients
 
 
 def normalize(v):
@@ -21,9 +20,8 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.7			# Lambda / eligibility scale
-		self.epsilon = 0.674		# Epsilon greedy selection
-		# self.epsilon = lambda step: 0.99 * np.exp(np.log(0.05) * step)			# Decreasing exponential epsilon
+		self.alpha = 0.3			# learning rate
+		self.epsilon = Gradients.exponenetial
 
 		# Game settings
 		self.gamedim = gamedim
@@ -174,7 +172,7 @@ class NeuralNetwork:
 				i += 1
 				qset = self.propagate(game.grid_to_input()).tolist()
 
-				if random.random() < self.epsilon:
+				if random.random() < self.epsilon(float(epochs)/maxepochs):
 					index = random.randint(0, 3)		# Choose random action
 				else:
 					index = qset.index(max(qset))		# Choose policy action
@@ -280,7 +278,5 @@ class NeuralNetwork:
 
 nn = NeuralNetwork([16, 4], 4)
 print json.dumps(nn.batchplay(n=1000, progress=True), indent=2)
-print nn.network
-nn.train(verbose=False, progress=True, save=True, maxepochs=3000)
-print nn.network
+nn.train(verbose=False, progress=True, save=True, maxepochs=100)
 print json.dumps(nn.batchplay(n=1000, progress=True), indent=2)
