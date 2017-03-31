@@ -6,27 +6,36 @@ from Game import Game
 import datetime
 import pickle
 from os import listdir
+import json
 
 
-def epsilon(step):										# Epsilon-greedy selection
-	return 0.99 * np.exp(-1 * np.log(0.99/0.05) * step)
+def epsilon(step):											# Epsilon-greedy selection
+	return 0.99 * np.exp(np.log(0.05) * step)
+
+
+def normalize(v):
+	v = np.array(v)
+	return (v/np.sqrt(np.sum(v*v))).tolist()
 
 
 class NeuralNetwork:
-	def __init__(self, layers, afn=ActivationFunctions.Sigmoid):
-
+	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.9  # Discounted reward constant
-		self.e_scale = 0.9  # Lambda / eligibility scale
+		self.alpha = 0.9  # Lambda / eligibility scale
+
+		# Game settings
+		self.gamedim = gamedim
 
 		# NN Architecture
 		self.layers = layers
 		self.network = []
-		self.biases = np.random.rand(len(layers)) * 2 - 1
+		self.biases = [np.array(np.random.rand(i) * 2 - 1) for i in layers]
+
 		self.aFn = afn
 		self.depth = len(layers)
 
-		self.stats = {}
+		self.stats = dict()
 		self.stats['trainingEpochs'] = 0
 
 		# Weights for input layer (layer 0)
@@ -35,7 +44,7 @@ class NeuralNetwork:
 		for i in range(self.depth - 1):
 			singlelayer = np.array([])
 			for x in range(layers[i]):
-				rand = np.random.rand(layers[i + 1]) * 2 -1
+				rand = np.random.rand(layers[i + 1]) * 2 - 1
 
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			self.network.append(np.transpose(singlelayer))
@@ -49,15 +58,14 @@ class NeuralNetwork:
 
 	@staticmethod
 	def load(path=''):
-		file = ''
 		if path == '':
 			files = filter(lambda x: x[-3:] == ".nn", listdir('./trainlogs'))
 			files.sort()
-			file = "./trainlogs/" + files[-1]
+			f = "./trainlogs/" + files[-1]
 		else:
-			file = path
+			f = path
 
-		with open(file, "rb") as input:
+		with open(f, "rb") as input:
 			return pickle.load(input)
 
 	@staticmethod
@@ -81,14 +89,15 @@ class NeuralNetwork:
 
 	# Feedforward propagation
 	def propagate(self, input, returnActivations=False):
+		input = np.array(normalize(input))
 		inputmatrix = np.array(self.aFn(input))
 		output = np.array([])
-		multioutput = []
-		net = []
 		activation = []
 		for i in range(len(self.layers)):
 			output = np.array([])
 			for x in range(self.layers[i]):
+				# if i == len(self.layers)-1:
+				# 	print np.dot(inputmatrix, self.network[i][x]), self.aFn(np.dot(inputmatrix, self.network[i][x]))
 				output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x])))
 			inputmatrix = output
 
@@ -100,7 +109,7 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def tdlearn(self, qsel, reward, e_trace, game, input):			# Temporal difference back propagation
+	def tdlearn(self, qsel, reward, del_w, game, input):			# Temporal difference back propagation
 		activation = self.propagate(game.grid_to_input(), True)
 		qset = activation[-1].tolist()
 
@@ -112,7 +121,7 @@ class NeuralNetwork:
 
 		for i in range(self.depth-2, -1, -1):
 			del_activation_matrix = np.diag(map(lambda x: x*(1-x), activation[i]))
-			weights = self.network[i+1];
+			weights = self.network[i+1]
 			product = np.matmul(del_activation_matrix, weights.transpose())
 			delta_i = np.matmul(product, delta[0])
 			delta.insert(0, delta_i)
@@ -122,28 +131,34 @@ class NeuralNetwork:
 
 		# Calculate eligibility traces
 		for i in range(len(delta)-1, -1, -1):
-			e_trace[i] += self.e_scale * np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
+			# Online training
+			del_w[i] = self.alpha * np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
 
 		# Update weights
 		for i in range(self.depth):
 			del_weights = np.zeros(self.network[i].shape)
-			for k in range(e_trace[i].shape[0]):
-				for j in range(e_trace[i].shape[1]):
-					del_weights[j][k] = np.matmul(e_trace[i][k][j], td_error)
+			for k in range(del_w[i].shape[0]):
+				for j in range(del_w[i].shape[1]):
+					# Error for each output neuron
+					del_weights[j][k] = np.matmul(del_w[i][k][j], td_error)
+
+					# Error for single output neuron
+					# del_weights[j][k] = del_w[i][k][j][qsel[1]] * td_error[qsel[1]]
+
 			self.network[i] += del_weights
 
-	def train(self, gameDim, maxEpochs=1000, verbose=False, progress=False, save=False):
+	def train(self, maxepochs=1000, verbose=False, progress=False, save=False):
 		# Create empty e-trace
-		e_trace = []
+		del_w = []
 		output_neurons = self.layers[-1]
 
 		# e_ijk = e[k][j][i]
 		for i in range(self.depth):
-			e_trace.append(np.zeros(self.network[i].shape[::-1] + (output_neurons,)))
+			del_w.append(np.zeros(self.network[i].shape[::-1] + (output_neurons,)))
 
 		epochs = 0
-		while epochs < maxEpochs:
-			game = Game(gameDim)
+		while epochs < maxepochs:
+			game = Game(self.gamedim)
 			halt = False
 			i = 0
 			if verbose:
@@ -152,19 +167,21 @@ class NeuralNetwork:
 				print game.printgrid(), "\n"
 
 			state = game.currState
-			qset = self.propagate(game.grid_to_input()).tolist()
 
 			while not halt:
 				i += 1
+				qset = self.propagate(game.grid_to_input()).tolist()
 
-				if random.random() < epsilon(epochs/maxEpochs):
+				if random.random() < 0.5:
 					index = random.randint(0, 3)		# Choose random action
 				else:
 					index = qset.index(max(qset))		# Choose policy action
 
 				qsel = (qset[index], index)
 
-				input = game.grid_to_input()
+				# print qset
+
+				input = normalize(game.grid_to_input())
 
 				next_state = game.transition(direction=qsel[1])
 				reward = NeuralNetwork.reward(state, next_state)
@@ -172,7 +189,7 @@ class NeuralNetwork:
 				halt = state.halt
 
 				# TD Learning
-				self.tdlearn(qsel, reward, e_trace, game, input)
+				self.tdlearn(qsel, reward, del_w, game, input)
 
 				if verbose:
 					print "i:", i
@@ -183,13 +200,79 @@ class NeuralNetwork:
 			epochs += 1
 
 			if progress:
-				print "Epochs ", epochs, "/", maxEpochs
+				print "Epochs ", epochs, "/", maxepochs
 
 		if save:
-			self.stats['trainingEpochs'] = maxEpochs
+			self.stats['trainingEpochs'] += maxepochs
 			self.save()
 
-# nn = NeuralNetwork([16, 16, 4])
-# nn.train(gameDim=4, verbose=True, maxEpochs=1, progress=True, save=True)
-nn = NeuralNetwork.load()
-print nn.__dict__
+	def play(self, verbose=False):
+		stat = {}
+		game = Game(self.gamedim)
+		i = 0
+		invalid = {'count': 0, 'offset': 0}
+
+		if verbose:
+			print "New game..."
+			print "i: ", i
+			print game.printgrid()
+
+		state = game.currState
+
+		while not state.halt:
+			i += 1
+
+			qset = self.propagate(game.grid_to_input()).tolist()
+
+			policy = np.array(qset)
+			policy.sort()
+			policy = map(lambda i: qset.index(i), policy[::-1])
+
+			state = game.transition(direction=policy[invalid['offset']])
+
+			if not state.valid:
+				invalid['count'] += 1
+				invalid['offset'] += 1
+			else:
+				invalid['offset'] = 0
+
+			if verbose:
+				print "i:", i
+				game.printgrid()
+				print "Score: ", game.currState.score
+				print "Valid: ", state.valid, "\t Halt: ", state.halt
+				print ""
+
+		stat['maxTile'] = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
+		stat['score'] = game.currState.score
+		stat['steps'] = i
+		stat['invalid'] = invalid['count']
+		return stat
+
+	def batchplay(self, n=1, progress=False, verbose=False):
+		avgstat = {
+			'maxTileCount': {},
+			'avgScore': 0,
+			'avgSteps': 0,
+			'avgInvalid': 0
+		}
+		for i in range(n):
+			stat = self.play(verbose=verbose)
+
+			if str(stat['maxTile']) in avgstat['maxTileCount'].keys():
+				avgstat['maxTileCount'][str(stat['maxTile'])] += stat['maxTile']
+			else:
+				avgstat['maxTileCount'].update({str(stat['maxTile']): stat['maxTile']})
+
+			avgstat['avgScore'] += stat['score']/n
+			avgstat['avgSteps'] += stat['steps']/n
+			avgstat['avgInvalid'] += stat['invalid']/n
+
+			if progress:
+				print "Game ", i, "/", n
+		return avgstat
+
+nn = NeuralNetwork([16, 4], 4)
+nn.train(verbose=False, progress=True, save=True, maxepochs=1000)
+# nn = NeuralNetwork.load()
+print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
