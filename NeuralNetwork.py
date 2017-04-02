@@ -3,6 +3,8 @@ import json
 import pickle
 import random
 import numpy as np
+import sys
+import math
 
 from os import listdir
 from Game import Game
@@ -10,9 +12,14 @@ from components.ProgressBar import ProgressBar
 from functions import ActivationFunctions
 from functions import Gradients
 
+# Pickle fix
+sys.modules['ActivationFunctions'] = ActivationFunctions
+sys.modules['Gradients'] = Gradients
+
 
 def normalize(v):
 	v = np.array(v)
+
 	return (v/np.sqrt(np.sum(v*v))).tolist()
 
 
@@ -21,7 +28,7 @@ class NeuralNetwork:
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
 		self.alpha = 0.6			# learning rate
-		self.epsilon = Gradients.exponenetial
+		self.epsilon = Gradients.Const(0.5)
 
 		# Game settings
 		self.gamedim = gamedim
@@ -48,9 +55,9 @@ class NeuralNetwork:
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			self.network.append(np.transpose(singlelayer))
 
-	def save(self):
+	def save(self, path='train/', prefix=''):
 		now = datetime.datetime.now()
-		path = "trainlogs/" + now.strftime('%y-%m-%d-%I-%M.nn')
+		path += prefix + now.strftime('%y-%m-%d %I:%M.nn')
 
 		with open(path, "wb") as output:
 			pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
@@ -58,23 +65,22 @@ class NeuralNetwork:
 	@staticmethod
 	def load(path=''):
 		if path == '':
-			files = filter(lambda x: x[-3:] == ".nn", listdir('./trainlogs'))
+			files = filter(lambda x: x[-3:] == ".nn", listdir('./train'))
 			files.sort()
-			f = "./trainlogs/" + files[-1]
+			f = "./train/" + files[-1]
 		else:
 			f = path
 
 		with open(f, "rb") as input:
-			nn = pickle.load(input)
-			print "NN Stats\n", nn.stats
+			return pickle.load(input)
 
 	@staticmethod
 	def reward(fromstate, tostate):
 		if not tostate.valid:
 			return -1
 		elif tostate.score - fromstate.score > 0:
-			return 1
-			# return math.log(tostate.score - fromstate.score, 2)
+			# return 1
+			return math.log(tostate.score - fromstate.score, 2)
 		return 0
 
 	def print_network(self, biases=True, layers=True):
@@ -147,7 +153,7 @@ class NeuralNetwork:
 
 			self.network[i] += del_weights
 
-	def train(self, maxepochs=1000, verbose=False, progress=False, save=False):
+	def train(self, maxepochs=1000, verbose=False, progress=False, save=False, prefix=''):
 		# Create empty e-trace
 		del_w = []
 		output_neurons = self.layers[-1]
@@ -204,7 +210,7 @@ class NeuralNetwork:
 
 		if save:
 			self.stats['trainingEpochs'] += maxepochs
-			self.save()
+			self.save(prefix=prefix)
 
 	def play(self, verbose=False):
 		stat = {}
@@ -244,13 +250,11 @@ class NeuralNetwork:
 				print ""
 
 		stat['maxTile'] = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
+		stat['minTile'] = min([min(filter(lambda x: x, game.currState.grid[k])) for k in range(len(game.currState.grid))])
 		stat['score'] = game.currState.score
 		stat['steps'] = i
 		stat['invalid'] = invalid['count']
 		stat['grid'] = game.currState.grid
-
-		game.printgrid()
-		print
 
 		return stat
 
@@ -258,9 +262,12 @@ class NeuralNetwork:
 		avgstat = {
 			'totalGames': n,
 			'maxTileCount': {},
+			'minTileCount': {},
 			'avgScore': 0,
 			'avgSteps': 0,
 			'avgInvalid': 0,
+			'minScore': 0,
+			'maxScore': 0
 		}
 
 		games = []
@@ -270,10 +277,13 @@ class NeuralNetwork:
 
 			games.append(stat)
 
-			if str(stat['maxTile']) in avgstat['maxTileCount'].keys():
-				avgstat['maxTileCount'][str(stat['maxTile'])] += 1
-			else:
-				avgstat['maxTileCount'].update({str(stat['maxTile']): 1})
+			avgstat['maxTileCount'].update({str(stat['maxTile']): 1})
+
+			if stat['score'] < avgstat['minScore'] or not avgstat['minScore']:
+				avgstat['minScore'] = stat['score']
+
+			if stat['score'] > avgstat['maxScore']:
+				avgstat['maxScore'] = stat['score']
 
 			avgstat['avgScore'] += stat['score']/float(n)
 			avgstat['avgSteps'] += stat['steps']/float(n)
@@ -285,7 +295,10 @@ class NeuralNetwork:
 				p.update(i+1)
 		return avgstat
 
-nn = NeuralNetwork([16, 16, 4], 4)
-print json.dumps(nn.batchplay(n=100), indent=2)
-nn.train(verbose=False, progress=True, save=False, maxepochs=1000)
-print json.dumps(nn.batchplay(n=100), indent=2)
+# nn = NeuralNetwork([16, 16, 4], 4)
+# print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
+nn = NeuralNetwork.load()
+print "Total training epochs: ", nn.stats['trainingEpochs']
+for i in range(10):
+	nn.train(verbose=False, progress=True, save=True, maxepochs=100, prefix='bernard_2-')
+	print json.dumps(nn.batchplay(n=100, progress=True), indent=2)

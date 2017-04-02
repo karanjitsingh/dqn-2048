@@ -101,7 +101,7 @@ class Game(object):
 			halt = True
 			for i in range(n):
 				for j in range(n - 1):
-					if grid[j][i] == grid[j + 1][i] or grid[i][j] == grid[i][j + 1]:
+					if grid[j][i] == 0 or grid[j][i] == grid[j + 1][i] or grid[i][j] == grid[i][j + 1]:
 						halt = False
 						break
 
@@ -161,16 +161,11 @@ class Game(object):
 
 
 # default = [
-# 	[0, 0, 0, 0],
-# 	[4, 4, 4, 0],
-# 	[0, 0, 0, 0],
-# 	[0, 0, 0, 0]
+# 	[4, 2, 4, 8],
+# 	[2, 4, 16, 32],
+# 	[4, 16, 32, 128],
+# 	[0, 2, 64, 2]
 # ]
 #
-# game = Game(4)
-# game.printgrid()
-#
-# while 1:
-# 	state = game.transition()
-# 	game.printgrid()
-# 	print state.valid, state.halt, state.full
+# game = Game(4, grid=default)
+# game.transition(direction=0).printstate()

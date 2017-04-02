@@ -18,7 +18,7 @@ class ProgressBar:
 		line = self.title + " ["
 		progress = val*self.width/self.total
 		line += "=" * progress
-		line += " " * (self.width - progress) + "] " + str(progress * 100 / self.width) + "% : " + str(val) + "/" + str(self.total)
+		line += " " * (self.width - progress) + "] " + str(val * 100 / self.total) + "% : " + str(val) + "/" + str(self.total)
 		sys.stdout.write(line)
 		sys.stdout.flush()
 		self.lastline = line
