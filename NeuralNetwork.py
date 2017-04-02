@@ -27,7 +27,7 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.6			# learning rate
+		self.alpha = 0.2			# learning rate
 		self.epsilon = Gradients.Const(0.5)
 
 		# Game settings
@@ -45,7 +45,7 @@ class NeuralNetwork:
 		self.stats['trainingEpochs'] = 0
 
 		# Weights for input layer (layer 0)
-		self.network.append(np.random.rand(layers[0], layers[0])*2 - 1)
+		self.network.append(np.random.rand(layers[0], gamedim*gamedim)*2 - 1)
 
 		for i in range(self.depth - 1):
 			singlelayer = np.array([])
@@ -183,10 +183,7 @@ class NeuralNetwork:
 				else:
 					index = qset.index(max(qset))		# Choose policy action
 
-				# print qset
-
 				input = normalize(game.grid_to_input())
-
 				next_state = game.transition(direction=index)
 				reward = NeuralNetwork.reward(state, next_state)
 				state = game.currState
@@ -262,7 +259,6 @@ class NeuralNetwork:
 		avgstat = {
 			'totalGames': n,
 			'maxTileCount': {},
-			'minTileCount': {},
 			'avgScore': 0,
 			'avgSteps': 0,
 			'avgInvalid': 0,
@@ -277,7 +273,10 @@ class NeuralNetwork:
 
 			games.append(stat)
 
-			avgstat['maxTileCount'].update({str(stat['maxTile']): 1})
+			if str(stat['maxTile']) in avgstat['maxTileCount'].keys():
+				avgstat['maxTileCount'][str(stat['maxTile'])] += 1
+			else:
+				avgstat['maxTileCount'].update({str(stat['maxTile']): 1})
 
 			if stat['score'] < avgstat['minScore'] or not avgstat['minScore']:
 				avgstat['minScore'] = stat['score']
@@ -295,10 +294,9 @@ class NeuralNetwork:
 				p.update(i+1)
 		return avgstat
 
-# nn = NeuralNetwork([16, 16, 4], 4)
+nn = NeuralNetwork([24, 4], 4)
 # print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
-nn = NeuralNetwork.load()
 print "Total training epochs: ", nn.stats['trainingEpochs']
-for i in range(10):
-	nn.train(verbose=False, progress=True, save=True, maxepochs=100, prefix='bernard_2-')
+for i in range(100):
+	nn.train(verbose=False, progress=True, save=True, maxepochs=100, prefix='bernard_4-')
 	print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
