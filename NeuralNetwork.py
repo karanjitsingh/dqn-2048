@@ -28,7 +28,7 @@ class NeuralNetwork:
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
 		self.alpha = 0.2			# learning rate
-		self.epsilon = Gradients.Const(0.5)
+		self.epsilon = Gradients.Exponential(1, 0.05)
 
 		# Game settings
 		self.gamedim = gamedim
@@ -71,6 +71,8 @@ class NeuralNetwork:
 		else:
 			f = path
 
+		print "[", f, "]"
+
 		with open(f, "rb") as input:
 			return pickle.load(input)
 
@@ -79,8 +81,8 @@ class NeuralNetwork:
 		if not tostate.valid:
 			return -1
 		elif tostate.score - fromstate.score > 0:
-			# return 1
-			return math.log(tostate.score - fromstate.score, 2)
+			return 1
+			# return math.log(tostate.score - fromstate.score, 2)
 		return 0
 
 	def print_network(self, biases=True, layers=True):
@@ -102,9 +104,7 @@ class NeuralNetwork:
 		for i in range(len(self.layers)):
 			output = np.array([])
 			for x in range(self.layers[i]):
-				# if i == len(self.layers)-1:
-				# 	print np.dot(inputmatrix, self.network[i][x]), self.aFn(np.dot(inputmatrix, self.network[i][x]))
-				output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x])))
+				output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x]))
 			inputmatrix = output
 
 			if returnActivations:
@@ -139,6 +139,10 @@ class NeuralNetwork:
 		for i in range(len(delta)-1, -1, -1):
 			# Online training
 			del_w[i] = self.alpha * np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
+
+		# Update biases
+		for i in range(self.depth):
+			self.biases[i] += self.alpha * np.matmul(delta[i], td_error)
 
 		# Update weights
 		for i in range(self.depth):
@@ -271,6 +275,9 @@ class NeuralNetwork:
 		for i in range(n):
 			stat = self.play(verbose=verbose)
 
+			if verbose:
+				print json.dumps(stat, indent=2)
+
 			games.append(stat)
 
 			if str(stat['maxTile']) in avgstat['maxTileCount'].keys():
@@ -294,9 +301,15 @@ class NeuralNetwork:
 				p.update(i+1)
 		return avgstat
 
-nn = NeuralNetwork([24, 4], 4)
+nn = NeuralNetwork([16, 16, 4], 4)
 # print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
+
+# nn = NeuralNetwork.load()
+
 print "Total training epochs: ", nn.stats['trainingEpochs']
+
+print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
+
 for i in range(100):
-	nn.train(verbose=False, progress=True, save=True, maxepochs=100, prefix='bernard_4-')
+	nn.train(verbose=False, progress=True, save=True, maxepochs=100, prefix='bernard_5-')
 	print json.dumps(nn.batchplay(n=100, progress=True), indent=2)

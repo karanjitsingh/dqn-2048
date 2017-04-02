@@ -1,12 +1,22 @@
 import numpy as np
 
 
-def exponenetial(step):
-	return 0.99 * np.exp(np.log(0.05) * step)
+class Exponential:
+	def __init__(self, start, stop):
+		self.start = start
+		self.stop = stop
+
+	def __call__(self, step):
+		return self.start * np.exp(np.log(self.stop) * step)
 
 
-def linear(step):
-	return 0.99 - 0.94 * step
+class Linear:
+	def __init__(self, start, stop):
+		self.start = start
+		self.stop = stop
+
+	def __call__(self, step):
+		return self.start - (self.start - self.stop) * step
 
 
 class Const:
