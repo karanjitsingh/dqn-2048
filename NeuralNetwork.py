@@ -217,6 +217,7 @@ class NeuralNetwork:
 		stat = {}
 		game = Game(self.gamedim)
 		i = 0
+		dtext = ['down', 'right', 'up', 'left']
 		invalid = {'count': 0, 'offset': 0}
 
 		if verbose:
@@ -237,6 +238,9 @@ class NeuralNetwork:
 
 			state = game.transition(direction=policy[invalid['offset']])
 
+			d = dtext[policy[invalid['offset']]]
+
+
 			if not state.valid:
 				invalid['count'] += 1
 				invalid['offset'] += 1
@@ -246,6 +250,7 @@ class NeuralNetwork:
 			if verbose:
 				print "i:", i
 				game.printgrid()
+				print d
 				print "Score: ", game.currState.score
 				print "Valid: ", state.valid, "\t Halt: ", state.halt
 				print ""
@@ -256,6 +261,9 @@ class NeuralNetwork:
 		stat['steps'] = i
 		stat['invalid'] = invalid['count']
 		stat['grid'] = game.currState.grid
+
+		if verbose:
+			print json.dumps(stat, indent=2)
 
 		return stat
 
@@ -301,15 +309,4 @@ class NeuralNetwork:
 				p.update(i+1)
 		return avgstat
 
-nn = NeuralNetwork([16, 16, 4], 4)
-# print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
 
-# nn = NeuralNetwork.load()
-
-print "Total training epochs: ", nn.stats['trainingEpochs']
-
-print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
-
-for i in range(100):
-	nn.train(verbose=False, progress=True, save=True, maxepochs=100, prefix='bernard_5-')
-	print json.dumps(nn.batchplay(n=100, progress=True), indent=2)

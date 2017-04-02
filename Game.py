@@ -90,8 +90,9 @@ class Game(object):
 				grid[y] = r + zeroes
 			if row != grid[y]:
 				valid = True
-				if len(filter(lambda a: a == 0, grid[y])):
-					full = False
+
+			if len(zeroes):
+				full = False
 
 		if direction[1] != 0:
 			grid = map(list, zip(*grid))
