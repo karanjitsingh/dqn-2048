@@ -65,7 +65,7 @@ class NeuralNetwork:
 	@staticmethod
 	def load(path=''):
 		if path == '':
-			files = filter(lambda x: x[-3:] == ".nn", listdir('./train'))
+			files = filter(lambda x: x[-3:] == ".nn", listdir('./trainlogs'))
 			files.sort()
 			f = "./trainlogs/" + files[-1]
 		else:
