@@ -1,10 +1,10 @@
 from NeuralNetwork import NeuralNetwork
 import json
 
-nn = NeuralNetwork([16, 16, 16, 4], 4)
+# nn = NeuralNetwork([16, 16, 16, 4], 4)
 # print json.dumps(nn.batchplay(n=100, progress=True), indent=2)
 
-# nn = NeuralNetwork.load()
+nn = NeuralNetwork.load()
 
 print "Total training epochs: ", nn.stats['trainingEpochs']
 

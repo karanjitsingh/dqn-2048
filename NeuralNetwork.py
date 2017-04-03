@@ -55,7 +55,7 @@ class NeuralNetwork:
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			self.network.append(np.transpose(singlelayer))
 
-	def save(self, path='train/', prefix=''):
+	def save(self, path='trainlogs/', prefix=''):
 		now = datetime.datetime.now()
 		path += prefix + now.strftime('%y-%m-%d %I:%M.nn')
 
@@ -67,7 +67,7 @@ class NeuralNetwork:
 		if path == '':
 			files = filter(lambda x: x[-3:] == ".nn", listdir('./train'))
 			files.sort()
-			f = "./train/" + files[-1]
+			f = "./trainlogs/" + files[-1]
 		else:
 			f = path
 
@@ -249,8 +249,8 @@ class NeuralNetwork:
 
 			if verbose:
 				print "i:", i
-				game.printgrid()
 				print d
+				game.printgrid()
 				print "Score: ", game.currState.score
 				print "Valid: ", state.valid, "\t Halt: ", state.halt
 				print ""
