@@ -60,13 +60,13 @@ class NeuralNetwork:
 		for i in range(self.depth):
 			self.e_trace.append(np.ndarray(self.network[i].shape[::-1] + (output_neurons,)))
 
-	def save(self, path='trainlogs/', filename=''):
+	def save(self, path='trainlogs/', filename='default'):
 		path += filename + ".nn"
 
 		with open(path, "wb") as output:
 			pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
-	def savestats(self, path='trainlogs/', filename=''):
+	def savestats(self, path='trainlogs/', filename='default'):
 		path += filename + ".stats"
 		stat = self.batchplay(n=100, progress=False)
 		stat = "Training Epochs:" + str(self.stats['trainingEpochs']) + "\n" + json.dumps(stat, indent=4) + "\n\n"
@@ -75,10 +75,16 @@ class NeuralNetwork:
 			output.write(stat)
 
 	@staticmethod
-	def savereplay(memory, path='trainlogs/', filename=''):
+	def savereplay(memory, path='trainlogs/', filename='default'):
 		path += filename + ".replay"
 		with open(path, "wb") as output:
 			pickle.dump(memory, output, pickle.HIGHEST_PROTOCOL)
+
+	@staticmethod
+	def loadreplay(memory, path='trainlogs/', filename='default'):
+		path += filename + ".replay"
+		with open(path, "rb") as input:
+			return pickle.load(input)
 
 	@staticmethod
 	def load(path=''):
@@ -213,11 +219,12 @@ class NeuralNetwork:
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			batch_w.append(np.transpose(singlelayer))
 
+		replay = []
 		epochs = 0
 		if self.stats['trainingEpochs'] > 0:
 			epochs = self.stats['trainingEpochs']
+			replay = self.loadreplay(filename=filename)
 
-		replay = []
 
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
