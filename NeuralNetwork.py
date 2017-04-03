@@ -24,6 +24,7 @@ def normalize(v):
 
 
 class NeuralNetwork:
+
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
@@ -51,9 +52,17 @@ class NeuralNetwork:
 			singlelayer = np.array([])
 			for x in range(layers[i]):
 				rand = np.random.rand(layers[i + 1]) * 2 - 1
-
 				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
 			self.network.append(np.transpose(singlelayer))
+
+		# Create empty e-trace
+		self.e_trace = []
+		output_neurons = self.layers[-1]
+
+		# e_ijk = e[k][j][i]
+		for i in range(self.depth):
+			self.e_trace.append(np.ndarray(self.network[i].shape[::-1] + (output_neurons,)))
+
 
 	def save(self, path='trainlogs/', prefix=''):
 		now = datetime.datetime.now()
@@ -115,7 +124,7 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def tdlearn(self, qset, reward, del_w, game, input):			# Temporal difference back propagation
+	def td_gradient(self, qset, reward, game, input, batch_w, batch_b):			# Temporal difference back propagation
 		activation = self.propagate(game.grid_to_input(), True)
 		qmax = max(activation[-1].tolist())
 
@@ -138,33 +147,45 @@ class NeuralNetwork:
 		# Calculate eligibility traces
 		for i in range(len(delta)-1, -1, -1):
 			# Online training
-			del_w[i] = self.alpha * np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
+			self.e_trace[i] = self.alpha * np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
 
 		# Update biases
 		for i in range(self.depth):
-			self.biases[i] += self.alpha * np.matmul(delta[i], td_error)
+			batch_b[i] += self.alpha * np.matmul(delta[i], td_error)
 
 		# Update weights
 		for i in range(self.depth):
 			del_weights = np.zeros(self.network[i].shape)
-			for k in range(del_w[i].shape[0]):
-				for j in range(del_w[i].shape[1]):
+			for k in range(self.e_trace[i].shape[0]):
+				for j in range(self.e_trace[i].shape[1]):
 					# Error for each output neuron
-					del_weights[j][k] = np.matmul(del_w[i][k][j], td_error)
+					del_weights[j][k] = np.matmul(self.e_trace[i][k][j], td_error)
 
 					# Error for single output neuron
 					# del_weights[j][k] = del_w[i][k][j][qsel[1]] * td_error[qsel[1]]
 
-			self.network[i] += del_weights
+			batch_w[i] += del_weights
 
-	def train(self, maxepochs=1000, verbose=False, progress=False, save=False, prefix=''):
-		# Create empty e-trace
-		del_w = []
-		output_neurons = self.layers[-1]
-
-		# e_ijk = e[k][j][i]
+	def learn(self, del_w, del_b):
+		# Update biases
 		for i in range(self.depth):
-			del_w.append(np.zeros(self.network[i].shape[::-1] + (output_neurons,)))
+			self.biases[i] += del_b[i]
+
+		# Update weights
+		for i in range(self.depth):
+			self.network[i] += del_w[i]
+
+	def train(self, maxepochs=1000, batch=10, verbose=False, progress=False, save=False, prefix=''):
+
+		batch_b = [np.array(np.zeros(i)) for i in self.layers]
+		batch_w = list()
+		batch_w.append(np.random.rand(self.layers[0], self.gamedim * self.gamedim) * 2 - 1)
+		for i in range(self.depth - 1):
+			singlelayer = np.array([])
+			for x in range(self.layers[i]):
+				rand = np.zeros(self.layers[i + 1])
+				singlelayer = np.vstack([singlelayer, rand]) if singlelayer.size else np.array([rand])
+			batch_w.append(np.transpose(singlelayer))
 
 		epochs = 0
 		while epochs < maxepochs:
@@ -193,8 +214,14 @@ class NeuralNetwork:
 				state = game.currState
 				halt = state.halt
 
-				# TD Learning
-				self.tdlearn(qset, reward, del_w, game, input)
+				# Accumulate gradient generated from TD backpropagation
+				self.td_gradient(qset, reward, game, input, batch_w, batch_b)
+
+				if not i % batch:
+					self.learn(batch_w, batch_b)
+					for i in range(self.depth):
+						batch_b[i].fill(0)
+						batch_w[i].fill(0)
 
 				if verbose:
 					print "i:", i
@@ -203,6 +230,9 @@ class NeuralNetwork:
 					print "Score: ", game.currState.score
 					print ""
 			epochs += 1
+
+			if i % batch:
+				self.learn(batch_w, batch_b)
 
 			if progress:
 				if epochs == 1:
@@ -232,14 +262,13 @@ class NeuralNetwork:
 
 			qset = self.propagate(game.grid_to_input()).tolist()
 
-			policy = np.array(qset)
-			policy.sort()
-			policy = map(lambda i: qset.index(i), policy[::-1])
+			policy = [k for k in enumerate(qset)]
+			policy.sort(key=lambda x: x[1])
+			policy = map(lambda x: x[0], policy[::-1])
 
 			state = game.transition(direction=policy[invalid['offset']])
 
 			d = dtext[policy[invalid['offset']]]
-
 
 			if not state.valid:
 				invalid['count'] += 1
