@@ -18,17 +18,14 @@ sys.modules['Gradients'] = Gradients
 
 
 def normalize(v):
-	v = np.array(v)
-
-	return (v/np.sqrt(np.sum(v*v))).tolist()
-
+	return map(lambda x: math.log(x,2) if x else x, v)
 
 class NeuralNetwork:
 
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.2			# learning rate
+		self.alpha = 0.4			# learning rate
 		self.epsilon = Gradients.Linear(1, 0.05)
 
 		# Game settings
@@ -206,6 +203,9 @@ class NeuralNetwork:
 			batch_w.append(np.transpose(singlelayer))
 
 		epochs = 0
+		if self.stats['trainingEpochs'] > 0:
+			epochs = self.stats['trainingEpochs']
+
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
 			halt = False
