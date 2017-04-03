@@ -1,20 +1,24 @@
 from NeuralNetwork import NeuralNetwork
 import json
+from datetime import datetime
 
-nn = NeuralNetwork([16, 16, 4], 4)
+nn = NeuralNetwork([16, 16, 16, 4], 4)
+name = 'hawking'
 
+print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']
 
-name = 'benzema'
+print "\n", datetime.now(), "\n"
 
 nn.train(
 	verbose=False,
 	progress=True,
 	save=True,
-	maxepochs=10000,
+	maxepochs=5000000,
 	batch=20,
+	replay_size=100000,
 	filename=name,
-	autosave=100,
+	autosave=5000,
 	savestats=True
 )
 

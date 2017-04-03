@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 import pickle
 import random
@@ -26,7 +26,7 @@ class NeuralNetwork:
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
 		self.alpha = 0.4			# learning rate
-		self.epsilon = Gradients.Linear(1, 0.05)
+		self.epsilon = Gradients.Exponential(1, 0.05)
 
 		# Game settings
 		self.gamedim = gamedim
@@ -61,7 +61,6 @@ class NeuralNetwork:
 			self.e_trace.append(np.ndarray(self.network[i].shape[::-1] + (output_neurons,)))
 
 	def save(self, path='trainlogs/', filename=''):
-		now = datetime.datetime.now()
 		path += filename + ".nn"
 
 		with open(path, "wb") as output:
@@ -74,6 +73,12 @@ class NeuralNetwork:
 		print "\n" + stat
 		with open(path, "a+") as output:
 			output.write(stat)
+
+	@staticmethod
+	def savereplay(memory, path='trainlogs/', filename=''):
+		path += filename + ".replay"
+		with open(path, "wb") as output:
+			pickle.dump(memory, output, pickle.HIGHEST_PROTOCOL)
 
 	@staticmethod
 	def load(path=''):
@@ -139,11 +144,12 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def td_gradient(self, qset, reward, game, input, batch_w, batch_b):			# Temporal difference back propagation
-		activation = self.propagate(game.grid_to_input(), True)
+	def td_gradient(self, qset, reward, next_input, sel_index, input):			# Temporal difference back propagation
+		activation = self.propagate(normalize(next_input), True)
 		qmax = max(activation[-1].tolist())
 
-		td_error = reward + self.gamma * np.array(qmax) - qset
+		# td_error = reward + self.gamma * np.array(qmax) - qset
+		td_error = map((lambda i: (reward + self.gamma * np.array(qmax) - qset[sel_index])*2 if i == sel_index else 0), qset)
 
 		# Calculate deltas
 		delta = []
@@ -164,9 +170,12 @@ class NeuralNetwork:
 			# Online training
 			self.e_trace[i] = self.alpha * np.array([delta[i] * activation[i][k] for k in range(activation[i].size)])
 
+		delta_biases = []
+		delta_weights = []
+
 		# Update biases
 		for i in range(self.depth):
-			batch_b[i] += self.alpha * np.matmul(delta[i], td_error)
+			delta_biases.append(self.alpha * np.matmul(delta[i], td_error))
 
 		# Update weights
 		for i in range(self.depth):
@@ -179,7 +188,9 @@ class NeuralNetwork:
 					# Error for single output neuron
 					# del_weights[j][k] = del_w[i][k][j][qsel[1]] * td_error[qsel[1]]
 
-			batch_w[i] += del_weights
+			delta_weights.append(del_weights)
+
+		return delta_weights, delta_biases
 
 	def learn(self, del_w, del_b):
 		# Update biases
@@ -190,7 +201,7 @@ class NeuralNetwork:
 		for i in range(self.depth):
 			self.network[i] += del_w[i]
 
-	def train(self, maxepochs=1000, batch=10, verbose=False, progress=False, save=False, filename='', autosave=100, savestats=False):
+	def train(self, maxepochs=1000, batch=10, replay_size=1000000, verbose=False, progress=False, save=False, filename='', autosave=100, savestats=False):
 
 		batch_b = [np.array(np.zeros(i)) for i in self.layers]
 		batch_w = list()
@@ -206,6 +217,8 @@ class NeuralNetwork:
 		if self.stats['trainingEpochs'] > 0:
 			epochs = self.stats['trainingEpochs']
 
+		replay = []
+
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
 			halt = False
@@ -216,10 +229,11 @@ class NeuralNetwork:
 
 			state = game.currState
 
+
 			i = 0
 			while not halt:
 				i += 1
-				qset = self.propagate(game.grid_to_input()).tolist()
+				qset = self.propagate(normalize(game.grid_to_input())).tolist()
 
 				if random.random() < self.epsilon(float(epochs)/maxepochs):
 					index = random.randint(0, 3)		# Choose random action
@@ -232,14 +246,11 @@ class NeuralNetwork:
 				state = game.currState
 				halt = state.halt
 
-				# Accumulate gradient generated from TD backpropagation
-				self.td_gradient(qset, reward, game, input, batch_w, batch_b)
 
-				if not i % batch:
-					self.learn(batch_w, batch_b)
-					for i in range(self.depth):
-						batch_b[i].fill(0)
-						batch_w[i].fill(0)
+				# Add transition to experience
+				replay.append((qset, reward, game.grid_to_input(), index, input, ))
+				if len(replay) > replay_size:
+					replay.pop(0)
 
 				if verbose:
 					print "i:", i
@@ -247,8 +258,29 @@ class NeuralNetwork:
 					print "Reward: ", reward
 					print "Score: ", game.currState.score
 					print ""
+
+			# Learn from epoch / experience replay
+			if epochs > 1:
+				for j in range(batch):
+					index = random.randint(0, len(replay) - 1)
+
+					# Generate gradients with TD backpropagation
+					dw, db = self.td_gradient(*(replay[index]))
+
+					# Accumulate gradients and form mini-batch
+					for i in range(self.depth):
+						batch_b[i] += db[i]
+						batch_w[i] += dw[i]
+
+			# Learn from minibatch
+			self.learn(batch_w, batch_b)
+			for i in range(self.depth):
+				batch_b[i].fill(0)
+				batch_w[i].fill(0)
+
 			epochs += 1
 
+			# Update progress bar
 			if progress:
 				if epochs == 1:
 					p = ProgressBar(40, maxepochs, "Epochs", verbose)
@@ -257,17 +289,17 @@ class NeuralNetwork:
 			if not epochs%autosave:
 				self.stats['trainingEpochs'] += autosave
 				self.save(filename=filename)
+				self.savereplay(replay, filename=filename)
 				if savestats:
 					self.savestats(filename=filename)
 
 			if i % batch:
 				self.learn(batch_w, batch_b)
 
-
-
 		if save:
-			self.stats['trainingEpochs'] += maxepochs%autosave
+			self.stats['trainingEpochs'] += maxepochs % autosave
 			self.save(filename=filename)
+			self.savereplay(replay, filename=filename)
 			if savestats:
 				self.savestats(filename=filename)
 
@@ -288,7 +320,7 @@ class NeuralNetwork:
 		while not state.halt:
 			i += 1
 
-			qset = self.propagate(game.grid_to_input()).tolist()
+			qset = self.propagate(normalize(game.grid_to_input())).tolist()
 
 			policy = [k for k in enumerate(qset)]
 			policy.sort(key=lambda x: x[1])
@@ -332,7 +364,8 @@ class NeuralNetwork:
 			'avgSteps': 0,
 			'avgInvalid': 0,
 			'minScore': 0,
-			'maxScore': 0
+			'maxScore': 0,
+			'datetime': str(datetime.now())
 		}
 
 		games = []
