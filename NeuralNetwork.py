@@ -29,7 +29,7 @@ class NeuralNetwork:
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
 		self.alpha = 0.2			# learning rate
-		self.epsilon = Gradients.Exponential(1, 0.05)
+		self.epsilon = Gradients.Linear(1, 0.05)
 
 		# Game settings
 		self.gamedim = gamedim
@@ -63,13 +63,20 @@ class NeuralNetwork:
 		for i in range(self.depth):
 			self.e_trace.append(np.ndarray(self.network[i].shape[::-1] + (output_neurons,)))
 
-
-	def save(self, path='trainlogs/', prefix=''):
+	def save(self, path='trainlogs/', filename=''):
 		now = datetime.datetime.now()
-		path += prefix + now.strftime('%y-%m-%d %I:%M.nn')
+		path += filename + ".nn"
 
 		with open(path, "wb") as output:
 			pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+
+	def savestats(self, path='trainlogs/', filename=''):
+		path += filename + ".stats"
+		stat = self.batchplay(n=100, progress=False)
+		stat = "Training Epochs:" + str(self.stats['trainingEpochs']) + "\n" + json.dumps(stat, indent=4) + "\n\n"
+		print "\n" + stat
+		with open(path, "a+") as output:
+			output.write(stat)
 
 	@staticmethod
 	def load(path=''):
@@ -89,8 +96,19 @@ class NeuralNetwork:
 	def reward(fromstate, tostate):
 		if not tostate.valid:
 			return -1
-		elif tostate.score - fromstate.score > 0:
-			return 1
+		else:
+			x = 0
+			y = 0
+			for i in range(len(fromstate.grid)):
+				for j in range(len(fromstate.grid)):
+					if not fromstate.grid[i][j]:
+						x += 1
+					if not tostate.grid[i][j]:
+						y += 1
+			if y >= x:
+				return 1
+
+			# return 1
 			# return math.log(tostate.score - fromstate.score, 2)
 		return 0
 
@@ -175,7 +193,7 @@ class NeuralNetwork:
 		for i in range(self.depth):
 			self.network[i] += del_w[i]
 
-	def train(self, maxepochs=1000, batch=10, verbose=False, progress=False, save=False, prefix=''):
+	def train(self, maxepochs=1000, batch=10, verbose=False, progress=False, save=False, filename='', autosave=100, savestats=False):
 
 		batch_b = [np.array(np.zeros(i)) for i in self.layers]
 		batch_w = list()
@@ -231,17 +249,27 @@ class NeuralNetwork:
 					print ""
 			epochs += 1
 
-			if i % batch:
-				self.learn(batch_w, batch_b)
-
 			if progress:
 				if epochs == 1:
 					p = ProgressBar(40, maxepochs, "Epochs", verbose)
 				p.update(epochs)
 
+			if not epochs%autosave:
+				self.stats['trainingEpochs'] += autosave
+				self.save(filename=filename)
+				if savestats:
+					self.savestats(filename=filename)
+
+			if i % batch:
+				self.learn(batch_w, batch_b)
+
+
+
 		if save:
-			self.stats['trainingEpochs'] += maxepochs
-			self.save(prefix=prefix)
+			self.stats['trainingEpochs'] += maxepochs%autosave
+			self.save(filename=filename)
+			if savestats:
+				self.savestats(filename=filename)
 
 	def play(self, verbose=False):
 		stat = {}
