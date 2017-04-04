@@ -81,7 +81,7 @@ class NeuralNetwork:
 			pickle.dump(memory, output, pickle.HIGHEST_PROTOCOL)
 
 	@staticmethod
-	def loadreplay(memory, path='trainlogs/', filename='default'):
+	def loadreplay(path='trainlogs/', filename='default'):
 		path += filename + ".replay"
 		with open(path, "rb") as input:
 			return pickle.load(input)
@@ -225,6 +225,9 @@ class NeuralNetwork:
 			epochs = self.stats['trainingEpochs']
 			replay = self.loadreplay(filename=filename)
 
+		print len(replay)
+		pbar = None
+
 
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
@@ -289,9 +292,9 @@ class NeuralNetwork:
 
 			# Update progress bar
 			if progress:
-				if epochs == 1:
-					p = ProgressBar(40, maxepochs, "Epochs", verbose)
-				p.update(epochs)
+				if pbar is None:
+					pbar = ProgressBar(40, maxepochs, "Epochs", verbose)
+				pbar.update(epochs)
 
 			if not epochs%autosave:
 				self.stats['trainingEpochs'] += autosave
