@@ -132,7 +132,7 @@ class NeuralNetwork:
 
 	# Feedforward propagation
 	def propagate(self, input, returnActivations=False):
-		input = np.array(normalize(input))
+		input = np.array(input)
 		inputmatrix = np.array(self.aFn(input))
 		output = np.array([])
 		activation = []
