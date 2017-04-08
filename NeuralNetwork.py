@@ -20,12 +20,13 @@ sys.modules['Gradients'] = Gradients
 def normalize(v):
 	return map(lambda x: math.log(x,2) if x else x, v)
 
+
 class NeuralNetwork:
 
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.4			# learning rate
+		self.alpha = 0.6			# learning rate
 		self.epsilon = Gradients.Exponential(1, 0.05)
 
 		# Game settings
@@ -133,7 +134,7 @@ class NeuralNetwork:
 	# Feedforward propagation
 	def propagate(self, input, returnActivations=False):
 		input = np.array(input)
-		inputmatrix = np.array(self.aFn(input))
+		inputmatrix = np.array(input)
 		output = np.array([])
 		activation = []
 		for i in range(len(self.layers)):
@@ -150,12 +151,16 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def td_gradient(self, qset, reward, next_input, sel_index, input):			# Temporal difference back propagation
+	def td_gradient(self, qset, reward, next_input, state, sel_index, input):			# Temporal difference back propagation
 		activation = self.propagate(normalize(next_input), True)
-		qmax = max(activation[-1].tolist())
+
+		qtarget = map(lambda i: self.reward(state, Game.get_next_state(state, direction=Game.getdirection(i))), [0,1,2,3])
+
+		# qmax = max(activation[-1].tolist())
+		qmax = max(qtarget)
 
 		# td_error = reward + self.gamma * np.array(qmax) - qset
-		td_error = map((lambda i: (reward + self.gamma * np.array(qmax) - qset[sel_index])*2 if i == sel_index else 0), qset)
+		td_error = map((lambda i: (reward + self.gamma * np.array(qmax) - qset[sel_index])*2 if i == qset[sel_index] else 0), qset)
 
 		# Calculate deltas
 		delta = []
@@ -168,7 +173,7 @@ class NeuralNetwork:
 			delta_i = np.matmul(product, delta[0])
 			delta.insert(0, delta_i)
 
-		input = self.aFn(input)
+		# input = self.aFn(input)
 		activation.insert(0, np.array(input))
 
 		# Calculate eligibility traces
@@ -203,9 +208,14 @@ class NeuralNetwork:
 		for i in range(self.depth):
 			self.biases[i] += del_b[i]
 
+		ssq = 0
+
 		# Update weights
 		for i in range(self.depth):
+			ssq += np.sum(del_w[i] ** 2)
 			self.network[i] += del_w[i]
+
+		return np.sqrt(ssq)
 
 	def train(self, maxepochs=1000, batch=10, replay_size=1000000, verbose=False, progress=False, save=False, filename='', autosave=100, savestats=False):
 
@@ -225,9 +235,10 @@ class NeuralNetwork:
 			epochs = self.stats['trainingEpochs']
 			replay = self.loadreplay(filename=filename)
 
-		print len(replay)
 		pbar = None
 
+		normchart = open("./trainlogs/" + filename + ".norm", "a")
+		normdata = []
 
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
@@ -238,7 +249,6 @@ class NeuralNetwork:
 				print game.printgrid(), "\n"
 
 			state = game.currState
-
 
 			i = 0
 			while not halt:
@@ -258,7 +268,7 @@ class NeuralNetwork:
 
 
 				# Add transition to experience
-				replay.append((qset, reward, game.grid_to_input(), index, input, ))
+				replay.append((qset, reward, game.grid_to_input(), game.currState, index, input, ))
 				if len(replay) > replay_size:
 					replay.pop(0)
 
@@ -283,7 +293,11 @@ class NeuralNetwork:
 						batch_w[i] += dw[i]
 
 			# Learn from minibatch
-			self.learn(batch_w, batch_b)
+			norm = self.learn(batch_w, batch_b)
+			print norm
+			normdata.append(norm)
+
+
 			for i in range(self.depth):
 				batch_b[i].fill(0)
 				batch_w[i].fill(0)
@@ -300,11 +314,10 @@ class NeuralNetwork:
 				self.stats['trainingEpochs'] += autosave
 				self.save(filename=filename)
 				self.savereplay(replay, filename=filename)
+				normchart.write("\n" + ("\n".join(map(str, normdata))))
+				normdata = []
 				if savestats:
 					self.savestats(filename=filename)
-
-			if i % batch:
-				self.learn(batch_w, batch_b)
 
 		if save:
 			self.stats['trainingEpochs'] += maxepochs % autosave
@@ -348,7 +361,9 @@ class NeuralNetwork:
 
 			if verbose:
 				print "i:", i
-				print d
+				print "Direction: ", d
+				print "Qset: ", qset
+				print "Index: ", policy[invalid['offset']]
 				game.printgrid()
 				print "Score: ", game.currState.score
 				print "Valid: ", state.valid, "\t Halt: ", state.halt
