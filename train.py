@@ -2,10 +2,10 @@ from NeuralNetwork import NeuralNetwork
 import json
 from datetime import datetime
 
-name = 'hawking'
-# nn = NeuralNetwork.load('./trainlogs/hope2.nn')
-
-nn = NeuralNetwork([256, 4], 4)
+name = 'hope'
+# nn = NeuralNetwork.load('./trainlogs/letshope.nn')
+#
+nn = NeuralNetwork([16, 16, 16, 16, 4], 4)
 
 print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']

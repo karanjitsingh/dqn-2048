@@ -1,0 +1,1948 @@
+Training Epochs:500
+{
+    "totalGames": 100, 
+    "avgScore": 1247.8799999999997, 
+    "maxTileCount": {
+        "128": 38, 
+        "64": 32, 
+        "256": 16, 
+        "32": 14
+    }, 
+    "datetime": "2017-04-08 21:10:27.117040", 
+    "minScore": 196, 
+    "avgInvalid": 35.86000000000001, 
+    "maxScore": 3564, 
+    "avgSteps": 141.89
+}
+
+Training Epochs:1000
+{
+    "totalGames": 100, 
+    "avgScore": 1377.8000000000002, 
+    "maxTileCount": {
+        "64": 37, 
+        "16": 2, 
+        "128": 28, 
+        "32": 9, 
+        "512": 1, 
+        "256": 23
+    }, 
+    "datetime": "2017-04-08 21:11:13.130215", 
+    "minScore": 132, 
+    "avgInvalid": 38.84, 
+    "maxScore": 6012, 
+    "avgSteps": 151.06
+}
+
+Training Epochs:1500
+{
+    "totalGames": 100, 
+    "avgScore": 1467.2800000000002, 
+    "maxTileCount": {
+        "128": 47, 
+        "256": 13, 
+        "512": 3, 
+        "64": 30, 
+        "32": 7
+    }, 
+    "datetime": "2017-04-08 21:12:00.806789", 
+    "minScore": 204, 
+    "avgInvalid": 40.410000000000025, 
+    "maxScore": 6580, 
+    "avgSteps": 157.97000000000008
+}
+
+Training Epochs:2000
+{
+    "totalGames": 100, 
+    "avgScore": 1324.5200000000004, 
+    "maxTileCount": {
+        "128": 40, 
+        "32": 8, 
+        "256": 17, 
+        "64": 33, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:12:48.728050", 
+    "minScore": 144, 
+    "avgInvalid": 37.05, 
+    "maxScore": 3392, 
+    "avgSteps": 147.87999999999997
+}
+
+Training Epochs:2500
+{
+    "totalGames": 100, 
+    "avgScore": 1438.8399999999995, 
+    "maxTileCount": {
+        "64": 23, 
+        "16": 1, 
+        "128": 36, 
+        "32": 15, 
+        "512": 1, 
+        "256": 24
+    }, 
+    "datetime": "2017-04-08 21:13:37.785323", 
+    "minScore": 104, 
+    "avgInvalid": 40.54000000000002, 
+    "maxScore": 5188, 
+    "avgSteps": 156.79
+}
+
+Training Epochs:3000
+{
+    "totalGames": 100, 
+    "avgScore": 1440.0000000000002, 
+    "maxTileCount": {
+        "128": 47, 
+        "256": 20, 
+        "64": 24, 
+        "32": 9
+    }, 
+    "datetime": "2017-04-08 21:14:26.197456", 
+    "minScore": 176, 
+    "avgInvalid": 38.82000000000001, 
+    "maxScore": 3904, 
+    "avgSteps": 155.86999999999995
+}
+
+Training Epochs:500
+{
+    "totalGames": 100, 
+    "avgScore": 1511.8, 
+    "maxTileCount": {
+        "128": 42, 
+        "32": 9, 
+        "512": 2, 
+        "64": 29, 
+        "256": 18
+    }, 
+    "datetime": "2017-04-08 21:14:30.872098", 
+    "minScore": 144, 
+    "avgInvalid": 41.87999999999999, 
+    "maxScore": 5836, 
+    "avgSteps": 162.23
+}
+
+Training Epochs:500
+{
+    "totalGames": 100, 
+    "avgScore": 1437.7999999999997, 
+    "maxTileCount": {
+        "128": 27, 
+        "256": 22, 
+        "512": 4, 
+        "64": 36, 
+        "32": 11
+    }, 
+    "datetime": "2017-04-08 21:16:03.427341", 
+    "minScore": 224, 
+    "avgInvalid": 38.71, 
+    "maxScore": 5876, 
+    "avgSteps": 152.79999999999998
+}
+
+Training Epochs:500
+{
+    "totalGames": 100, 
+    "avgScore": 1169.76, 
+    "maxTileCount": {
+        "128": 39, 
+        "256": 7, 
+        "32": 13, 
+        "64": 40, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:16:51.482048", 
+    "minScore": 132, 
+    "avgInvalid": 33.41, 
+    "maxScore": 3264, 
+    "avgSteps": 135.73999999999998
+}
+
+Training Epochs:1000
+{
+    "totalGames": 100, 
+    "avgScore": 1142.16, 
+    "maxTileCount": {
+        "128": 32, 
+        "256": 11, 
+        "16": 1, 
+        "64": 44, 
+        "32": 12
+    }, 
+    "datetime": "2017-04-08 21:17:35.332021", 
+    "minScore": 104, 
+    "avgInvalid": 32.279999999999994, 
+    "maxScore": 3292, 
+    "avgSteps": 132.32
+}
+
+Training Epochs:1500
+{
+    "totalGames": 100, 
+    "avgScore": 1118.5600000000002, 
+    "maxTileCount": {
+        "128": 35, 
+        "32": 14, 
+        "64": 40, 
+        "256": 10, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:18:21.064079", 
+    "minScore": 132, 
+    "avgInvalid": 33.21000000000001, 
+    "maxScore": 3712, 
+    "avgSteps": 131.46000000000004
+}
+
+Training Epochs:2000
+{
+    "totalGames": 100, 
+    "avgScore": 989.3200000000002, 
+    "maxTileCount": {
+        "128": 30, 
+        "256": 9, 
+        "32": 14, 
+        "64": 40, 
+        "16": 7
+    }, 
+    "datetime": "2017-04-08 21:19:06.689954", 
+    "minScore": 100, 
+    "avgInvalid": 29.15000000000001, 
+    "maxScore": 3788, 
+    "avgSteps": 119.40000000000002
+}
+
+Training Epochs:2500
+{
+    "totalGames": 100, 
+    "avgScore": 966.5200000000001, 
+    "maxTileCount": {
+        "128": 32, 
+        "32": 14, 
+        "64": 47, 
+        "256": 5, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:19:52.586143", 
+    "minScore": 152, 
+    "avgInvalid": 29.059999999999995, 
+    "maxScore": 3404, 
+    "avgSteps": 119.44000000000005
+}
+
+Training Epochs:3000
+{
+    "totalGames": 100, 
+    "avgScore": 983.0799999999998, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 20, 
+        "64": 45, 
+        "256": 5
+    }, 
+    "datetime": "2017-04-08 21:21:22.662811", 
+    "minScore": 188, 
+    "avgInvalid": 29.53999999999998, 
+    "maxScore": 3948, 
+    "avgSteps": 120.05999999999997
+}
+
+Training Epochs:3500
+{
+    "totalGames": 100, 
+    "avgScore": 1012.6399999999998, 
+    "maxTileCount": {
+        "128": 37, 
+        "32": 15, 
+        "64": 42, 
+        "256": 5, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:22:11.310928", 
+    "minScore": 76, 
+    "avgInvalid": 29.330000000000002, 
+    "maxScore": 3296, 
+    "avgSteps": 122.37000000000002
+}
+
+Training Epochs:4000
+{
+    "totalGames": 100, 
+    "avgScore": 1053.16, 
+    "maxTileCount": {
+        "128": 39, 
+        "32": 8, 
+        "64": 47, 
+        "256": 5, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:22:59.782246", 
+    "minScore": 244, 
+    "avgInvalid": 30.26000000000001, 
+    "maxScore": 3020, 
+    "avgSteps": 124.98000000000008
+}
+
+Training Epochs:4500
+{
+    "totalGames": 100, 
+    "avgScore": 1012.3199999999998, 
+    "maxTileCount": {
+        "128": 32, 
+        "32": 16, 
+        "64": 45, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:23:48.652512", 
+    "minScore": 156, 
+    "avgInvalid": 29.76, 
+    "maxScore": 2844, 
+    "avgSteps": 122.02
+}
+
+Training Epochs:5000
+{
+    "totalGames": 100, 
+    "avgScore": 1141.88, 
+    "maxTileCount": {
+        "128": 36, 
+        "32": 14, 
+        "512": 1, 
+        "64": 42, 
+        "256": 7
+    }, 
+    "datetime": "2017-04-08 21:24:37.349360", 
+    "minScore": 256, 
+    "avgInvalid": 31.56999999999999, 
+    "maxScore": 5316, 
+    "avgSteps": 130.74000000000004
+}
+
+Training Epochs:5500
+{
+    "totalGames": 100, 
+    "avgScore": 1044.12, 
+    "maxTileCount": {
+        "128": 33, 
+        "256": 8, 
+        "32": 13, 
+        "64": 44, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:25:26.941918", 
+    "minScore": 152, 
+    "avgInvalid": 30.799999999999997, 
+    "maxScore": 3908, 
+    "avgSteps": 125.02000000000002
+}
+
+Training Epochs:6000
+{
+    "totalGames": 100, 
+    "avgScore": 987.8400000000003, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 18, 
+        "64": 47, 
+        "256": 5
+    }, 
+    "datetime": "2017-04-08 21:26:16.633194", 
+    "minScore": 232, 
+    "avgInvalid": 28.88, 
+    "maxScore": 3484, 
+    "avgSteps": 119.78000000000004
+}
+
+Training Epochs:6500
+{
+    "totalGames": 100, 
+    "avgScore": 918.8000000000002, 
+    "maxTileCount": {
+        "128": 27, 
+        "32": 20, 
+        "64": 47, 
+        "256": 6
+    }, 
+    "datetime": "2017-04-08 21:27:06.409916", 
+    "minScore": 144, 
+    "avgInvalid": 27.990000000000002, 
+    "maxScore": 2776, 
+    "avgSteps": 114.17000000000003
+}
+
+Training Epochs:7000
+{
+    "totalGames": 100, 
+    "avgScore": 1151.5200000000004, 
+    "maxTileCount": {
+        "128": 35, 
+        "32": 15, 
+        "64": 40, 
+        "256": 10
+    }, 
+    "datetime": "2017-04-08 21:27:55.456893", 
+    "minScore": 212, 
+    "avgInvalid": 33.5, 
+    "maxScore": 3540, 
+    "avgSteps": 133.83999999999997
+}
+
+Training Epochs:7500
+{
+    "totalGames": 100, 
+    "avgScore": 1090.4, 
+    "maxTileCount": {
+        "128": 33, 
+        "256": 8, 
+        "16": 2, 
+        "64": 46, 
+        "32": 11
+    }, 
+    "datetime": "2017-04-08 21:28:45.207364", 
+    "minScore": 120, 
+    "avgInvalid": 31.480000000000008, 
+    "maxScore": 2888, 
+    "avgSteps": 128.86
+}
+
+Training Epochs:8000
+{
+    "totalGames": 100, 
+    "avgScore": 1063.2000000000003, 
+    "maxTileCount": {
+        "128": 35, 
+        "32": 7, 
+        "64": 52, 
+        "256": 4, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:29:35.328002", 
+    "minScore": 148, 
+    "avgInvalid": 31.210000000000004, 
+    "maxScore": 3168, 
+    "avgSteps": 127.94
+}
+
+Training Epochs:8500
+{
+    "totalGames": 100, 
+    "avgScore": 994.32, 
+    "maxTileCount": {
+        "128": 42, 
+        "32": 18, 
+        "64": 34, 
+        "256": 5, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:30:25.720398", 
+    "minScore": 156, 
+    "avgInvalid": 28.910000000000014, 
+    "maxScore": 2796, 
+    "avgSteps": 120.43999999999998
+}
+
+Training Epochs:9000
+{
+    "totalGames": 100, 
+    "avgScore": 1007.3199999999999, 
+    "maxTileCount": {
+        "128": 34, 
+        "32": 17, 
+        "64": 42, 
+        "256": 4, 
+        "16": 3
+    }, 
+    "datetime": "2017-04-08 21:31:15.668038", 
+    "minScore": 76, 
+    "avgInvalid": 28.78999999999998, 
+    "maxScore": 3712, 
+    "avgSteps": 121.70000000000006
+}
+
+Training Epochs:9500
+{
+    "totalGames": 100, 
+    "avgScore": 1157.1200000000001, 
+    "maxTileCount": {
+        "128": 38, 
+        "256": 9, 
+        "16": 2, 
+        "64": 42, 
+        "32": 9
+    }, 
+    "datetime": "2017-04-08 21:32:06.026436", 
+    "minScore": 144, 
+    "avgInvalid": 34.01000000000001, 
+    "maxScore": 3580, 
+    "avgSteps": 135.16999999999996
+}
+
+Training Epochs:10000
+{
+    "totalGames": 100, 
+    "avgScore": 1066.9200000000003, 
+    "maxTileCount": {
+        "128": 27, 
+        "32": 14, 
+        "64": 49, 
+        "256": 10
+    }, 
+    "datetime": "2017-04-08 21:32:56.691502", 
+    "minScore": 196, 
+    "avgInvalid": 31.180000000000003, 
+    "maxScore": 2816, 
+    "avgSteps": 126.78999999999995
+}
+
+Training Epochs:10500
+{
+    "totalGames": 100, 
+    "avgScore": 969.4000000000002, 
+    "maxTileCount": {
+        "128": 26, 
+        "32": 17, 
+        "64": 50, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:33:47.239094", 
+    "minScore": 120, 
+    "avgInvalid": 28.679999999999996, 
+    "maxScore": 3516, 
+    "avgSteps": 118.25999999999998
+}
+
+Training Epochs:11000
+{
+    "totalGames": 100, 
+    "avgScore": 938.1199999999998, 
+    "maxTileCount": {
+        "128": 33, 
+        "32": 23, 
+        "64": 36, 
+        "256": 6, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:34:37.377367", 
+    "minScore": 68, 
+    "avgInvalid": 28.56999999999999, 
+    "maxScore": 2320, 
+    "avgSteps": 115.42000000000002
+}
+
+Training Epochs:11500
+{
+    "totalGames": 100, 
+    "avgScore": 1163.6000000000001, 
+    "maxTileCount": {
+        "128": 44, 
+        "32": 10, 
+        "64": 37, 
+        "256": 8, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:35:28.566908", 
+    "minScore": 172, 
+    "avgInvalid": 33.06999999999999, 
+    "maxScore": 4420, 
+    "avgSteps": 134.57999999999996
+}
+
+Training Epochs:12000
+{
+    "totalGames": 100, 
+    "avgScore": 1146.64, 
+    "maxTileCount": {
+        "128": 37, 
+        "32": 14, 
+        "64": 41, 
+        "256": 8
+    }, 
+    "datetime": "2017-04-08 21:36:18.976475", 
+    "minScore": 148, 
+    "avgInvalid": 34.33999999999999, 
+    "maxScore": 3440, 
+    "avgSteps": 135.53
+}
+
+Training Epochs:12500
+{
+    "totalGames": 100, 
+    "avgScore": 1142.2800000000004, 
+    "maxTileCount": {
+        "64": 43, 
+        "16": 1, 
+        "128": 36, 
+        "32": 11, 
+        "512": 1, 
+        "256": 8
+    }, 
+    "datetime": "2017-04-08 21:37:10.514801", 
+    "minScore": 104, 
+    "avgInvalid": 32.27000000000001, 
+    "maxScore": 4488, 
+    "avgSteps": 131.86000000000004
+}
+
+Training Epochs:13000
+{
+    "totalGames": 100, 
+    "avgScore": 918.9199999999996, 
+    "maxTileCount": {
+        "128": 20, 
+        "256": 7, 
+        "16": 2, 
+        "64": 59, 
+        "32": 12
+    }, 
+    "datetime": "2017-04-08 21:38:01.697987", 
+    "minScore": 128, 
+    "avgInvalid": 27.420000000000005, 
+    "maxScore": 3200, 
+    "avgSteps": 114.31999999999998
+}
+
+Training Epochs:13500
+{
+    "totalGames": 100, 
+    "avgScore": 1089.6399999999999, 
+    "maxTileCount": {
+        "128": 38, 
+        "256": 8, 
+        "16": 2, 
+        "64": 37, 
+        "32": 15
+    }, 
+    "datetime": "2017-04-08 21:38:53.225611", 
+    "minScore": 96, 
+    "avgInvalid": 31.100000000000005, 
+    "maxScore": 3176, 
+    "avgSteps": 127.86000000000004
+}
+
+Training Epochs:14000
+{
+    "totalGames": 100, 
+    "avgScore": 1036.0400000000002, 
+    "maxTileCount": {
+        "128": 31, 
+        "32": 11, 
+        "64": 53, 
+        "256": 5
+    }, 
+    "datetime": "2017-04-08 21:39:45.123821", 
+    "minScore": 180, 
+    "avgInvalid": 31.220000000000002, 
+    "maxScore": 2744, 
+    "avgSteps": 126.0
+}
+
+Training Epochs:14500
+{
+    "totalGames": 100, 
+    "avgScore": 1020.4000000000001, 
+    "maxTileCount": {
+        "128": 31, 
+        "256": 7, 
+        "16": 1, 
+        "64": 48, 
+        "32": 13
+    }, 
+    "datetime": "2017-04-08 21:40:37.239763", 
+    "minScore": 176, 
+    "avgInvalid": 30.229999999999993, 
+    "maxScore": 3628, 
+    "avgSteps": 123.03
+}
+
+Training Epochs:15000
+{
+    "totalGames": 100, 
+    "avgScore": 1007.88, 
+    "maxTileCount": {
+        "128": 31, 
+        "256": 5, 
+        "16": 2, 
+        "64": 45, 
+        "32": 17
+    }, 
+    "datetime": "2017-04-08 21:41:28.962941", 
+    "minScore": 148, 
+    "avgInvalid": 29.92, 
+    "maxScore": 2668, 
+    "avgSteps": 122.58000000000003
+}
+
+Training Epochs:15500
+{
+    "totalGames": 100, 
+    "avgScore": 1040.7599999999993, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 20, 
+        "256": 9, 
+        "64": 38, 
+        "16": 3
+    }, 
+    "datetime": "2017-04-08 21:42:21.628923", 
+    "minScore": 100, 
+    "avgInvalid": 29.899999999999984, 
+    "maxScore": 3796, 
+    "avgSteps": 123.33999999999997
+}
+
+Training Epochs:16000
+{
+    "totalGames": 100, 
+    "avgScore": 1109.6399999999999, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 18, 
+        "64": 42, 
+        "256": 10
+    }, 
+    "datetime": "2017-04-08 21:43:14.566177", 
+    "minScore": 184, 
+    "avgInvalid": 32.290000000000006, 
+    "maxScore": 3424, 
+    "avgSteps": 130.88000000000002
+}
+
+Training Epochs:16500
+{
+    "totalGames": 100, 
+    "avgScore": 975.9599999999997, 
+    "maxTileCount": {
+        "128": 28, 
+        "32": 16, 
+        "64": 48, 
+        "256": 7, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:44:08.189812", 
+    "minScore": 184, 
+    "avgInvalid": 28.98000000000001, 
+    "maxScore": 2728, 
+    "avgSteps": 119.58000000000001
+}
+
+Training Epochs:17000
+{
+    "totalGames": 100, 
+    "avgScore": 1070.1199999999997, 
+    "maxTileCount": {
+        "128": 35, 
+        "256": 5, 
+        "16": 1, 
+        "64": 47, 
+        "32": 12
+    }, 
+    "datetime": "2017-04-08 21:45:01.627741", 
+    "minScore": 184, 
+    "avgInvalid": 30.850000000000026, 
+    "maxScore": 3952, 
+    "avgSteps": 127.15999999999998
+}
+
+Training Epochs:17500
+{
+    "totalGames": 100, 
+    "avgScore": 960.0400000000002, 
+    "maxTileCount": {
+        "128": 39, 
+        "32": 25, 
+        "64": 32, 
+        "256": 2, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:45:55.558518", 
+    "minScore": 120, 
+    "avgInvalid": 29.360000000000003, 
+    "maxScore": 2476, 
+    "avgSteps": 119.05999999999993
+}
+
+Training Epochs:18000
+{
+    "totalGames": 100, 
+    "avgScore": 1033.72, 
+    "maxTileCount": {
+        "128": 37, 
+        "32": 14, 
+        "64": 47, 
+        "256": 2
+    }, 
+    "datetime": "2017-04-08 21:46:48.723093", 
+    "minScore": 164, 
+    "avgInvalid": 31.030000000000012, 
+    "maxScore": 2992, 
+    "avgSteps": 125.46999999999998
+}
+
+Training Epochs:18500
+{
+    "totalGames": 100, 
+    "avgScore": 895.5200000000001, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 21, 
+        "64": 43, 
+        "256": 4, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:47:43.203806", 
+    "minScore": 128, 
+    "avgInvalid": 26.709999999999987, 
+    "maxScore": 3564, 
+    "avgSteps": 111.07000000000002
+}
+
+Training Epochs:19000
+{
+    "totalGames": 100, 
+    "avgScore": 1057.2399999999996, 
+    "maxTileCount": {
+        "128": 37, 
+        "32": 16, 
+        "64": 40, 
+        "256": 7
+    }, 
+    "datetime": "2017-04-08 21:48:37.084482", 
+    "minScore": 212, 
+    "avgInvalid": 30.730000000000008, 
+    "maxScore": 3472, 
+    "avgSteps": 126.04999999999993
+}
+
+Training Epochs:19500
+{
+    "totalGames": 100, 
+    "avgScore": 964.1200000000005, 
+    "maxTileCount": {
+        "128": 25, 
+        "32": 12, 
+        "64": 56, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:49:32.060737", 
+    "minScore": 144, 
+    "avgInvalid": 28.930000000000003, 
+    "maxScore": 3104, 
+    "avgSteps": 117.73999999999994
+}
+
+Training Epochs:20000
+{
+    "totalGames": 100, 
+    "avgScore": 1055.84, 
+    "maxTileCount": {
+        "128": 35, 
+        "32": 17, 
+        "64": 36, 
+        "256": 9, 
+        "16": 3
+    }, 
+    "datetime": "2017-04-08 21:50:26.165286", 
+    "minScore": 116, 
+    "avgInvalid": 29.949999999999996, 
+    "maxScore": 3732, 
+    "avgSteps": 123.71999999999997
+}
+
+Training Epochs:20500
+{
+    "totalGames": 100, 
+    "avgScore": 1008.2399999999998, 
+    "maxTileCount": {
+        "128": 26, 
+        "256": 9, 
+        "16": 2, 
+        "64": 48, 
+        "32": 15
+    }, 
+    "datetime": "2017-04-08 21:51:22.731442", 
+    "minScore": 136, 
+    "avgInvalid": 29.119999999999997, 
+    "maxScore": 3384, 
+    "avgSteps": 119.82000000000005
+}
+
+Training Epochs:21000
+{
+    "totalGames": 100, 
+    "avgScore": 1089.5999999999997, 
+    "maxTileCount": {
+        "128": 39, 
+        "64": 38, 
+        "256": 7, 
+        "32": 16
+    }, 
+    "datetime": "2017-04-08 21:52:18.423880", 
+    "minScore": 196, 
+    "avgInvalid": 31.560000000000002, 
+    "maxScore": 3432, 
+    "avgSteps": 128.91
+}
+
+Training Epochs:21500
+{
+    "totalGames": 100, 
+    "avgScore": 1089.32, 
+    "maxTileCount": {
+        "128": 29, 
+        "32": 15, 
+        "64": 46, 
+        "256": 9, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:53:15.147953", 
+    "minScore": 52, 
+    "avgInvalid": 31.21999999999999, 
+    "maxScore": 3444, 
+    "avgSteps": 128.31
+}
+
+Training Epochs:22000
+{
+    "totalGames": 100, 
+    "avgScore": 1089.92, 
+    "maxTileCount": {
+        "128": 37, 
+        "32": 19, 
+        "64": 35, 
+        "256": 9
+    }, 
+    "datetime": "2017-04-08 21:54:11.761512", 
+    "minScore": 200, 
+    "avgInvalid": 32.09, 
+    "maxScore": 3260, 
+    "avgSteps": 128.67999999999998
+}
+
+Training Epochs:22500
+{
+    "totalGames": 100, 
+    "avgScore": 1050.6400000000003, 
+    "maxTileCount": {
+        "128": 40, 
+        "32": 14, 
+        "64": 41, 
+        "256": 4, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 21:55:09.279397", 
+    "minScore": 172, 
+    "avgInvalid": 31.129999999999995, 
+    "maxScore": 3252, 
+    "avgSteps": 126.63
+}
+
+Training Epochs:23000
+{
+    "totalGames": 100, 
+    "avgScore": 934.7600000000003, 
+    "maxTileCount": {
+        "128": 31, 
+        "32": 25, 
+        "64": 36, 
+        "256": 5, 
+        "16": 3
+    }, 
+    "datetime": "2017-04-08 21:56:07.086282", 
+    "minScore": 128, 
+    "avgInvalid": 27.859999999999996, 
+    "maxScore": 2944, 
+    "avgSteps": 114.60000000000004
+}
+
+Training Epochs:23500
+{
+    "totalGames": 100, 
+    "avgScore": 1010.7999999999996, 
+    "maxTileCount": {
+        "128": 33, 
+        "32": 18, 
+        "64": 41, 
+        "256": 6, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 21:57:05.224799", 
+    "minScore": 124, 
+    "avgInvalid": 29.730000000000008, 
+    "maxScore": 2944, 
+    "avgSteps": 122.41999999999996
+}
+
+Training Epochs:24000
+{
+    "totalGames": 100, 
+    "avgScore": 1027.1199999999997, 
+    "maxTileCount": {
+        "128": 27, 
+        "32": 22, 
+        "512": 1, 
+        "64": 43, 
+        "256": 7
+    }, 
+    "datetime": "2017-04-08 21:58:03.190044", 
+    "minScore": 184, 
+    "avgInvalid": 30.00999999999999, 
+    "maxScore": 5640, 
+    "avgSteps": 123.1
+}
+
+Training Epochs:24500
+{
+    "totalGames": 100, 
+    "avgScore": 1049.8000000000002, 
+    "maxTileCount": {
+        "128": 33, 
+        "256": 9, 
+        "16": 1, 
+        "64": 39, 
+        "32": 18
+    }, 
+    "datetime": "2017-04-08 21:59:02.798060", 
+    "minScore": 72, 
+    "avgInvalid": 29.420000000000005, 
+    "maxScore": 2972, 
+    "avgSteps": 122.96
+}
+
+Training Epochs:25000
+{
+    "totalGames": 100, 
+    "avgScore": 975.3599999999998, 
+    "maxTileCount": {
+        "128": 28, 
+        "64": 51, 
+        "16": 1, 
+        "256": 4, 
+        "32": 16
+    }, 
+    "datetime": "2017-04-08 22:00:01.919038", 
+    "minScore": 236, 
+    "avgInvalid": 29.509999999999994, 
+    "maxScore": 3400, 
+    "avgSteps": 120.07999999999997
+}
+
+Training Epochs:25500
+{
+    "totalGames": 100, 
+    "avgScore": 1100.84, 
+    "maxTileCount": {
+        "128": 36, 
+        "64": 40, 
+        "16": 1, 
+        "256": 8, 
+        "32": 15
+    }, 
+    "datetime": "2017-04-08 22:01:02.079683", 
+    "minScore": 176, 
+    "avgInvalid": 32.18000000000001, 
+    "maxScore": 3032, 
+    "avgSteps": 130.45000000000002
+}
+
+Training Epochs:26000
+{
+    "totalGames": 100, 
+    "avgScore": 1096.16, 
+    "maxTileCount": {
+        "128": 40, 
+        "32": 7, 
+        "64": 47, 
+        "256": 4, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:02:03.581001", 
+    "minScore": 152, 
+    "avgInvalid": 33.34000000000001, 
+    "maxScore": 2708, 
+    "avgSteps": 131.97999999999996
+}
+
+Training Epochs:26500
+{
+    "totalGames": 100, 
+    "avgScore": 949.4799999999999, 
+    "maxTileCount": {
+        "128": 23, 
+        "32": 16, 
+        "64": 53, 
+        "256": 7, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:03:04.065488", 
+    "minScore": 160, 
+    "avgInvalid": 27.599999999999994, 
+    "maxScore": 2612, 
+    "avgSteps": 116.31
+}
+
+Training Epochs:27000
+{
+    "totalGames": 100, 
+    "avgScore": 1063.4799999999998, 
+    "maxTileCount": {
+        "128": 36, 
+        "64": 44, 
+        "256": 6, 
+        "32": 14
+    }, 
+    "datetime": "2017-04-08 22:04:03.872114", 
+    "minScore": 192, 
+    "avgInvalid": 30.640000000000004, 
+    "maxScore": 2700, 
+    "avgSteps": 126.65999999999997
+}
+
+Training Epochs:27500
+{
+    "totalGames": 100, 
+    "avgScore": 1014.4399999999999, 
+    "maxTileCount": {
+        "128": 28, 
+        "32": 13, 
+        "64": 52, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:05:05.455788", 
+    "minScore": 200, 
+    "avgInvalid": 30.52, 
+    "maxScore": 2724, 
+    "avgSteps": 123.64000000000003
+}
+
+Training Epochs:28000
+{
+    "totalGames": 100, 
+    "avgScore": 1111.9599999999996, 
+    "maxTileCount": {
+        "128": 36, 
+        "32": 12, 
+        "64": 41, 
+        "256": 10, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:06:06.912919", 
+    "minScore": 132, 
+    "avgInvalid": 31.780000000000005, 
+    "maxScore": 3240, 
+    "avgSteps": 129.29000000000002
+}
+
+Training Epochs:28500
+{
+    "totalGames": 100, 
+    "avgScore": 1004.8399999999999, 
+    "maxTileCount": {
+        "128": 41, 
+        "32": 16, 
+        "64": 38, 
+        "256": 4, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:07:10.939553", 
+    "minScore": 176, 
+    "avgInvalid": 29.679999999999993, 
+    "maxScore": 3244, 
+    "avgSteps": 121.43999999999998
+}
+
+Training Epochs:29000
+{
+    "totalGames": 100, 
+    "avgScore": 964.1599999999997, 
+    "maxTileCount": {
+        "128": 29, 
+        "256": 6, 
+        "16": 1, 
+        "64": 44, 
+        "32": 20
+    }, 
+    "datetime": "2017-04-08 22:08:16.191913", 
+    "minScore": 88, 
+    "avgInvalid": 28.360000000000003, 
+    "maxScore": 3016, 
+    "avgSteps": 117.63999999999999
+}
+
+Training Epochs:29500
+{
+    "totalGames": 100, 
+    "avgScore": 1088.24, 
+    "maxTileCount": {
+        "128": 34, 
+        "32": 8, 
+        "64": 50, 
+        "256": 6, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:09:20.735891", 
+    "minScore": 140, 
+    "avgInvalid": 32.410000000000004, 
+    "maxScore": 3904, 
+    "avgSteps": 129.49
+}
+
+Training Epochs:30000
+{
+    "totalGames": 100, 
+    "avgScore": 1090.4799999999998, 
+    "maxTileCount": {
+        "128": 34, 
+        "32": 14, 
+        "64": 45, 
+        "256": 7
+    }, 
+    "datetime": "2017-04-08 22:10:26.953462", 
+    "minScore": 276, 
+    "avgInvalid": 31.759999999999994, 
+    "maxScore": 3308, 
+    "avgSteps": 129.22
+}
+
+Training Epochs:30500
+{
+    "totalGames": 100, 
+    "avgScore": 998.9600000000003, 
+    "maxTileCount": {
+        "128": 24, 
+        "32": 15, 
+        "64": 51, 
+        "256": 8, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:11:32.028320", 
+    "minScore": 132, 
+    "avgInvalid": 29.100000000000005, 
+    "maxScore": 3128, 
+    "avgSteps": 120.55000000000008
+}
+
+Training Epochs:31000
+{
+    "totalGames": 100, 
+    "avgScore": 1114.6799999999998, 
+    "maxTileCount": {
+        "128": 38, 
+        "32": 14, 
+        "64": 42, 
+        "256": 6
+    }, 
+    "datetime": "2017-04-08 22:12:38.953354", 
+    "minScore": 192, 
+    "avgInvalid": 32.919999999999995, 
+    "maxScore": 3340, 
+    "avgSteps": 132.54
+}
+
+Training Epochs:31500
+{
+    "totalGames": 100, 
+    "avgScore": 1099.8400000000004, 
+    "maxTileCount": {
+        "128": 38, 
+        "256": 8, 
+        "16": 1, 
+        "64": 42, 
+        "32": 11
+    }, 
+    "datetime": "2017-04-08 22:13:46.275707", 
+    "minScore": 172, 
+    "avgInvalid": 30.91, 
+    "maxScore": 3040, 
+    "avgSteps": 128.53
+}
+
+Training Epochs:32000
+{
+    "totalGames": 100, 
+    "avgScore": 1084.7200000000005, 
+    "maxTileCount": {
+        "128": 38, 
+        "32": 15, 
+        "64": 39, 
+        "256": 7, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:14:55.041037", 
+    "minScore": 192, 
+    "avgInvalid": 31.68, 
+    "maxScore": 2864, 
+    "avgSteps": 128.50000000000003
+}
+
+Training Epochs:32500
+{
+    "totalGames": 100, 
+    "avgScore": 999.6400000000001, 
+    "maxTileCount": {
+        "128": 26, 
+        "32": 14, 
+        "64": 52, 
+        "256": 6, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:16:04.118126", 
+    "minScore": 132, 
+    "avgInvalid": 29.129999999999995, 
+    "maxScore": 3700, 
+    "avgSteps": 121.10999999999999
+}
+
+Training Epochs:33000
+{
+    "totalGames": 100, 
+    "avgScore": 1047.0, 
+    "maxTileCount": {
+        "128": 29, 
+        "32": 17, 
+        "64": 44, 
+        "256": 8, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:17:12.457825", 
+    "minScore": 116, 
+    "avgInvalid": 30.130000000000013, 
+    "maxScore": 2988, 
+    "avgSteps": 124.15
+}
+
+Training Epochs:33500
+{
+    "totalGames": 100, 
+    "avgScore": 1110.5599999999997, 
+    "maxTileCount": {
+        "128": 38, 
+        "32": 13, 
+        "64": 37, 
+        "256": 9, 
+        "16": 3
+    }, 
+    "datetime": "2017-04-08 22:18:24.660213", 
+    "minScore": 132, 
+    "avgInvalid": 31.92, 
+    "maxScore": 3688, 
+    "avgSteps": 129.66
+}
+
+Training Epochs:34000
+{
+    "totalGames": 100, 
+    "avgScore": 1029.9600000000003, 
+    "maxTileCount": {
+        "128": 31, 
+        "32": 12, 
+        "64": 52, 
+        "256": 3, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:19:36.091067", 
+    "minScore": 140, 
+    "avgInvalid": 31.43, 
+    "maxScore": 2716, 
+    "avgSteps": 126.21000000000001
+}
+
+Training Epochs:34500
+{
+    "totalGames": 100, 
+    "avgScore": 1135.4000000000003, 
+    "maxTileCount": {
+        "128": 44, 
+        "32": 12, 
+        "64": 40, 
+        "256": 3, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:20:49.953158", 
+    "minScore": 228, 
+    "avgInvalid": 33.69000000000001, 
+    "maxScore": 5028, 
+    "avgSteps": 134.24999999999997
+}
+
+Training Epochs:35000
+{
+    "totalGames": 100, 
+    "avgScore": 963.5599999999998, 
+    "maxTileCount": {
+        "128": 26, 
+        "32": 14, 
+        "64": 53, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:22:04.145501", 
+    "minScore": 92, 
+    "avgInvalid": 30.04, 
+    "maxScore": 2588, 
+    "avgSteps": 119.40999999999997
+}
+
+Training Epochs:35500
+{
+    "totalGames": 100, 
+    "avgScore": 973.6000000000005, 
+    "maxTileCount": {
+        "128": 34, 
+        "32": 18, 
+        "64": 42, 
+        "256": 4, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:23:18.804914", 
+    "minScore": 140, 
+    "avgInvalid": 29.510000000000012, 
+    "maxScore": 3360, 
+    "avgSteps": 118.66000000000005
+}
+
+Training Epochs:36000
+{
+    "totalGames": 100, 
+    "avgScore": 1008.5200000000002, 
+    "maxTileCount": {
+        "128": 37, 
+        "32": 15, 
+        "64": 45, 
+        "256": 3
+    }, 
+    "datetime": "2017-04-08 22:24:34.671310", 
+    "minScore": 192, 
+    "avgInvalid": 30.76000000000001, 
+    "maxScore": 2824, 
+    "avgSteps": 123.90000000000002
+}
+
+Training Epochs:36500
+{
+    "totalGames": 100, 
+    "avgScore": 976.6400000000003, 
+    "maxTileCount": {
+        "128": 23, 
+        "32": 18, 
+        "64": 48, 
+        "256": 8, 
+        "16": 3
+    }, 
+    "datetime": "2017-04-08 22:25:50.869131", 
+    "minScore": 108, 
+    "avgInvalid": 30.149999999999988, 
+    "maxScore": 2584, 
+    "avgSteps": 120.57000000000001
+}
+
+Training Epochs:37000
+{
+    "totalGames": 100, 
+    "avgScore": 1049.1999999999998, 
+    "maxTileCount": {
+        "128": 31, 
+        "32": 18, 
+        "64": 41, 
+        "256": 8, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:27:07.922098", 
+    "minScore": 144, 
+    "avgInvalid": 30.620000000000008, 
+    "maxScore": 4636, 
+    "avgSteps": 124.70000000000003
+}
+
+Training Epochs:37500
+{
+    "totalGames": 100, 
+    "avgScore": 1017.8400000000001, 
+    "maxTileCount": {
+        "128": 31, 
+        "64": 51, 
+        "16": 1, 
+        "256": 6, 
+        "32": 11
+    }, 
+    "datetime": "2017-04-08 22:28:25.591733", 
+    "minScore": 140, 
+    "avgInvalid": 29.109999999999996, 
+    "maxScore": 3524, 
+    "avgSteps": 121.70999999999997
+}
+
+Training Epochs:38000
+{
+    "totalGames": 100, 
+    "avgScore": 1075.04, 
+    "maxTileCount": {
+        "64": 46, 
+        "16": 2, 
+        "128": 29, 
+        "32": 16, 
+        "512": 1, 
+        "256": 6
+    }, 
+    "datetime": "2017-04-08 22:29:43.810575", 
+    "minScore": 140, 
+    "avgInvalid": 31.650000000000006, 
+    "maxScore": 4508, 
+    "avgSteps": 128.50999999999996
+}
+
+Training Epochs:38500
+{
+    "totalGames": 100, 
+    "avgScore": 1092.6800000000003, 
+    "maxTileCount": {
+        "64": 34, 
+        "32": 16, 
+        "128": 37, 
+        "8": 1, 
+        "16": 2, 
+        "256": 10
+    }, 
+    "datetime": "2017-04-08 22:31:04.032337", 
+    "minScore": 48, 
+    "avgInvalid": 31.659999999999986, 
+    "maxScore": 3496, 
+    "avgSteps": 128.07999999999996
+}
+
+Training Epochs:39000
+{
+    "totalGames": 100, 
+    "avgScore": 1020.4799999999998, 
+    "maxTileCount": {
+        "128": 35, 
+        "256": 5, 
+        "16": 1, 
+        "64": 41, 
+        "32": 18
+    }, 
+    "datetime": "2017-04-08 22:32:25.733074", 
+    "minScore": 116, 
+    "avgInvalid": 30.069999999999997, 
+    "maxScore": 2684, 
+    "avgSteps": 123.27999999999997
+}
+
+Training Epochs:39500
+{
+    "totalGames": 100, 
+    "avgScore": 1069.9600000000003, 
+    "maxTileCount": {
+        "128": 42, 
+        "32": 15, 
+        "64": 36, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:33:47.881715", 
+    "minScore": 152, 
+    "avgInvalid": 31.389999999999997, 
+    "maxScore": 2868, 
+    "avgSteps": 126.89000000000001
+}
+
+Training Epochs:40000
+{
+    "totalGames": 100, 
+    "avgScore": 1014.0400000000003, 
+    "maxTileCount": {
+        "128": 37, 
+        "64": 39, 
+        "16": 2, 
+        "256": 7, 
+        "32": 15
+    }, 
+    "datetime": "2017-04-08 22:35:09.212958", 
+    "minScore": 132, 
+    "avgInvalid": 28.860000000000014, 
+    "maxScore": 3140, 
+    "avgSteps": 120.28000000000003
+}
+
+Training Epochs:40500
+{
+    "totalGames": 100, 
+    "avgScore": 1096.5599999999997, 
+    "maxTileCount": {
+        "128": 39, 
+        "256": 7, 
+        "512": 1, 
+        "64": 42, 
+        "32": 11
+    }, 
+    "datetime": "2017-04-08 22:36:35.146265", 
+    "minScore": 156, 
+    "avgInvalid": 31.350000000000005, 
+    "maxScore": 4260, 
+    "avgSteps": 128.32999999999996
+}
+
+Training Epochs:41000
+{
+    "totalGames": 100, 
+    "avgScore": 1003.9599999999999, 
+    "maxTileCount": {
+        "128": 27, 
+        "32": 15, 
+        "64": 51, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:38:00.915941", 
+    "minScore": 88, 
+    "avgInvalid": 29.750000000000004, 
+    "maxScore": 2972, 
+    "avgSteps": 122.1
+}
+
+Training Epochs:41500
+{
+    "totalGames": 100, 
+    "avgScore": 1051.8400000000006, 
+    "maxTileCount": {
+        "128": 32, 
+        "64": 47, 
+        "256": 7, 
+        "32": 14
+    }, 
+    "datetime": "2017-04-08 22:39:27.279583", 
+    "minScore": 188, 
+    "avgInvalid": 31.01, 
+    "maxScore": 3692, 
+    "avgSteps": 125.57999999999997
+}
+
+Training Epochs:42000
+{
+    "totalGames": 100, 
+    "avgScore": 1006.9200000000002, 
+    "maxTileCount": {
+        "128": 30, 
+        "256": 4, 
+        "16": 1, 
+        "64": 46, 
+        "32": 19
+    }, 
+    "datetime": "2017-04-08 22:40:57.113171", 
+    "minScore": 200, 
+    "avgInvalid": 30.819999999999997, 
+    "maxScore": 2776, 
+    "avgSteps": 123.31000000000004
+}
+
+Training Epochs:42500
+{
+    "totalGames": 100, 
+    "avgScore": 904.1199999999999, 
+    "maxTileCount": {
+        "128": 29, 
+        "32": 18, 
+        "64": 49, 
+        "256": 3, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:42:25.088238", 
+    "minScore": 184, 
+    "avgInvalid": 27.629999999999992, 
+    "maxScore": 2948, 
+    "avgSteps": 113.21000000000002
+}
+
+Training Epochs:43000
+{
+    "totalGames": 100, 
+    "avgScore": 1045.5200000000002, 
+    "maxTileCount": {
+        "128": 34, 
+        "256": 7, 
+        "16": 1, 
+        "64": 45, 
+        "32": 13
+    }, 
+    "datetime": "2017-04-08 22:43:57.943886", 
+    "minScore": 124, 
+    "avgInvalid": 30.330000000000005, 
+    "maxScore": 3448, 
+    "avgSteps": 124.64000000000006
+}
+
+Training Epochs:43500
+{
+    "totalGames": 100, 
+    "avgScore": 1014.2399999999998, 
+    "maxTileCount": {
+        "128": 29, 
+        "256": 5, 
+        "16": 2, 
+        "64": 52, 
+        "32": 12
+    }, 
+    "datetime": "2017-04-08 22:45:32.824450", 
+    "minScore": 88, 
+    "avgInvalid": 30.099999999999998, 
+    "maxScore": 2732, 
+    "avgSteps": 122.56000000000002
+}
+
+Training Epochs:44000
+{
+    "totalGames": 100, 
+    "avgScore": 1047.2400000000002, 
+    "maxTileCount": {
+        "64": 51, 
+        "16": 2, 
+        "128": 27, 
+        "32": 12, 
+        "512": 1, 
+        "256": 7
+    }, 
+    "datetime": "2017-04-08 22:47:07.540388", 
+    "minScore": 116, 
+    "avgInvalid": 30.86, 
+    "maxScore": 4952, 
+    "avgSteps": 125.08
+}
+
+Training Epochs:44500
+{
+    "totalGames": 100, 
+    "avgScore": 1054.4399999999998, 
+    "maxTileCount": {
+        "128": 33, 
+        "32": 16, 
+        "64": 43, 
+        "256": 7, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:48:46.139613", 
+    "minScore": 112, 
+    "avgInvalid": 30.619999999999997, 
+    "maxScore": 3544, 
+    "avgSteps": 125.46000000000001
+}
+
+Training Epochs:45000
+{
+    "totalGames": 100, 
+    "avgScore": 1011.0000000000006, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 17, 
+        "64": 44, 
+        "256": 7, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:50:22.758147", 
+    "minScore": 160, 
+    "avgInvalid": 29.77999999999999, 
+    "maxScore": 3528, 
+    "avgSteps": 122.54000000000003
+}
+
+Training Epochs:45500
+{
+    "totalGames": 100, 
+    "avgScore": 992.0000000000003, 
+    "maxTileCount": {
+        "128": 34, 
+        "32": 13, 
+        "64": 47, 
+        "256": 6
+    }, 
+    "datetime": "2017-04-08 22:52:02.614468", 
+    "minScore": 220, 
+    "avgInvalid": 29.330000000000005, 
+    "maxScore": 3600, 
+    "avgSteps": 120.42000000000002
+}
+
+Training Epochs:46000
+{
+    "totalGames": 100, 
+    "avgScore": 1069.9599999999998, 
+    "maxTileCount": {
+        "128": 34, 
+        "256": 7, 
+        "16": 1, 
+        "64": 47, 
+        "32": 11
+    }, 
+    "datetime": "2017-04-08 22:53:41.839423", 
+    "minScore": 140, 
+    "avgInvalid": 31.94000000000001, 
+    "maxScore": 3260, 
+    "avgSteps": 127.98
+}
+
+Training Epochs:46500
+{
+    "totalGames": 100, 
+    "avgScore": 953.1199999999999, 
+    "maxTileCount": {
+        "128": 28, 
+        "32": 17, 
+        "64": 50, 
+        "256": 3, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 22:55:27.197477", 
+    "minScore": 72, 
+    "avgInvalid": 30.089999999999986, 
+    "maxScore": 2372, 
+    "avgSteps": 119.94000000000004
+}
+
+Training Epochs:47000
+{
+    "totalGames": 100, 
+    "avgScore": 1001.2799999999999, 
+    "maxTileCount": {
+        "128": 31, 
+        "256": 6, 
+        "16": 1, 
+        "64": 49, 
+        "32": 13
+    }, 
+    "datetime": "2017-04-08 22:57:12.328464", 
+    "minScore": 160, 
+    "avgInvalid": 28.839999999999986, 
+    "maxScore": 3100, 
+    "avgSteps": 120.13000000000002
+}
+
+Training Epochs:47500
+{
+    "totalGames": 100, 
+    "avgScore": 978.8799999999998, 
+    "maxTileCount": {
+        "128": 38, 
+        "32": 15, 
+        "64": 44, 
+        "256": 2, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 22:59:01.419322", 
+    "minScore": 96, 
+    "avgInvalid": 29.169999999999987, 
+    "maxScore": 2440, 
+    "avgSteps": 119.65000000000003
+}
+
+Training Epochs:48000
+{
+    "totalGames": 100, 
+    "avgScore": 1019.1199999999998, 
+    "maxTileCount": {
+        "128": 32, 
+        "32": 15, 
+        "64": 44, 
+        "256": 7, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 23:00:47.580487", 
+    "minScore": 100, 
+    "avgInvalid": 29.779999999999994, 
+    "maxScore": 3052, 
+    "avgSteps": 122.09999999999997
+}
+
+Training Epochs:48500
+{
+    "totalGames": 100, 
+    "avgScore": 1067.5599999999995, 
+    "maxTileCount": {
+        "64": 41, 
+        "16": 1, 
+        "128": 35, 
+        "32": 16, 
+        "512": 1, 
+        "256": 6
+    }, 
+    "datetime": "2017-04-08 23:02:38.464545", 
+    "minScore": 180, 
+    "avgInvalid": 31.710000000000004, 
+    "maxScore": 4612, 
+    "avgSteps": 127.66000000000001
+}
+
+Training Epochs:49000
+{
+    "totalGames": 100, 
+    "avgScore": 960.1199999999997, 
+    "maxTileCount": {
+        "128": 33, 
+        "32": 17, 
+        "64": 45, 
+        "256": 4, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 23:04:29.503181", 
+    "minScore": 124, 
+    "avgInvalid": 28.53, 
+    "maxScore": 2712, 
+    "avgSteps": 117.77999999999999
+}
+
+Training Epochs:49500
+{
+    "totalGames": 100, 
+    "avgScore": 961.5599999999997, 
+    "maxTileCount": {
+        "128": 30, 
+        "32": 18, 
+        "64": 45, 
+        "256": 5, 
+        "16": 2
+    }, 
+    "datetime": "2017-04-08 23:06:24.339243", 
+    "minScore": 100, 
+    "avgInvalid": 29.259999999999998, 
+    "maxScore": 3232, 
+    "avgSteps": 118.92999999999998
+}
+
+Training Epochs:50000
+{
+    "totalGames": 100, 
+    "avgScore": 1017.5999999999999, 
+    "maxTileCount": {
+        "128": 32, 
+        "32": 14, 
+        "64": 47, 
+        "256": 6, 
+        "16": 1
+    }, 
+    "datetime": "2017-04-08 23:08:21.994145", 
+    "minScore": 148, 
+    "avgInvalid": 30.159999999999993, 
+    "maxScore": 2872, 
+    "avgSteps": 122.94000000000003
+}
+
+Training Epochs:50000
+{
+    "totalGames": 100, 
+    "avgScore": 1084.6399999999996, 
+    "maxTileCount": {
+        "128": 38, 
+        "32": 26, 
+        "64": 28, 
+        "256": 8
+    }, 
+    "datetime": "2017-04-08 23:08:42.314896", 
+    "minScore": 228, 
+    "avgInvalid": 31.649999999999988, 
+    "maxScore": 2900, 
+    "avgSteps": 128.07999999999996
+}
+

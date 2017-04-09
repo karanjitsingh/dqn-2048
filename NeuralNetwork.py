@@ -105,20 +105,21 @@ class NeuralNetwork:
 	def reward(fromstate, tostate):
 		if not tostate.valid:
 			return -1
-		else:
-			x = 0
-			y = 0
-			for i in range(len(fromstate.grid)):
-				for j in range(len(fromstate.grid)):
-					if not fromstate.grid[i][j]:
-						x += 1
-					if not tostate.grid[i][j]:
-						y += 1
-			if y >= x:
-				return 1
+		elif tostate.score - fromstate.score > 0:
+			# x = 0
+			# y = 0
+			# for i in range(len(fromstate.grid)):
+			# 	for j in range(len(fromstate.grid)):
+			# 		if not fromstate.grid[i][j]:
+			# 			x += 1
+			# 		if not tostate.grid[i][j]:
+			# 			y += 1
+			# if y >= x:
+			# 	return 1
 
 			# return 1
 			# return math.log(tostate.score - fromstate.score, 2)
+			return 1
 		return 0
 
 	def print_network(self, biases=True, layers=True):
@@ -164,10 +165,10 @@ class NeuralNetwork:
 
 		# Calculate deltas
 		delta = []
-		delta.insert(0, np.diag(map(lambda x: x*(1-x), activation[-1])))
+		delta.insert(0, np.diag(map(lambda x: 1, activation[-1])))
 
 		for i in range(self.depth-2, -1, -1):
-			del_activation_matrix = np.diag(map(lambda x: x*(1-x), activation[i]))
+			del_activation_matrix = np.diag(map(lambda x: 1, activation[i]))
 			weights = self.network[i+1]
 			product = np.matmul(del_activation_matrix, weights.transpose())
 			delta_i = np.matmul(product, delta[0])
@@ -212,10 +213,10 @@ class NeuralNetwork:
 
 		# Update weights
 		for i in range(self.depth):
-			ssq += np.sum(del_w[i] ** 2)
+			ssq += np.sum(del_w[i])
 			self.network[i] += del_w[i]
 
-		return np.sqrt(ssq)
+		return ssq
 
 	def train(self, maxepochs=1000, batch=10, replay_size=1000000, verbose=False, progress=False, save=False, filename='', autosave=100, savestats=False):
 
@@ -293,9 +294,8 @@ class NeuralNetwork:
 						batch_w[i] += dw[i]
 
 			# Learn from minibatch
-			norm = self.learn(batch_w, batch_b)
-			print norm
-			normdata.append(norm)
+			# norm = self.learn(batch_w, batch_b)
+			# normdata.append(norm)
 
 
 			for i in range(self.depth):
@@ -314,8 +314,8 @@ class NeuralNetwork:
 				self.stats['trainingEpochs'] += autosave
 				self.save(filename=filename)
 				self.savereplay(replay, filename=filename)
-				normchart.write("\n" + ("\n".join(map(str, normdata))))
-				normdata = []
+				# normchart.write("\n" + ("\n".join(map(str, normdata))))
+				# normdata = []
 				if savestats:
 					self.savestats(filename=filename)
 
