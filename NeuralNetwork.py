@@ -26,7 +26,7 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.6			# learning rate
+		self.alpha = 0.0025			# learning rate
 		self.epsilon = Gradients.Exponential(1, 0.05)
 
 		# Game settings
@@ -35,7 +35,7 @@ class NeuralNetwork:
 		# NN Architecture
 		self.layers = layers
 		self.network = []
-		self.biases = [np.array(np.random.rand(i) * 2 - 1) for i in layers]
+		self.biases = [np.array(np.zeros(i)) for i in layers]
 
 		self.aFn = afn
 		self.depth = len(layers)
@@ -119,7 +119,7 @@ class NeuralNetwork:
 
 			# return 1
 			# return math.log(tostate.score - fromstate.score, 2)
-			return 1
+			return 1/(1+np.exp(-1 * np.log2(tostate.score - fromstate.score)))
 		return 0
 
 	def print_network(self, biases=True, layers=True):
@@ -141,7 +141,10 @@ class NeuralNetwork:
 		for i in range(len(self.layers)):
 			output = np.array([])
 			for x in range(self.layers[i]):
-				output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x]))
+				if i == len(self.layers) - 1:
+					output = np.append(output, np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x])
+				else:
+					output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x]))
 			inputmatrix = output
 
 			if returnActivations:
@@ -152,21 +155,17 @@ class NeuralNetwork:
 		else:
 			return output
 
-	def td_gradient(self, qset, reward, next_input, state, sel_index, input):			# Temporal difference back propagation
+	def td_gradient(self, qset, reward, next_input, sel_index, input):			# Temporal difference back propagation
 		activation = self.propagate(normalize(next_input), True)
 
-		# qtarget = map(lambda i: self.reward(state, Game.get_next_state(state, direction=Game.getdirection(i))), [0,1,2,3])
-
 		qmax = max(activation[-1].tolist())
-		qtarget = qset[sel_index]+self.alpha*((reward + self.gamma*qmax)-qset[sel_index])
 
-		# td_error = reward + self.gamma * np.array(qmax) - qset
-		# td_error = map((lambda i: (reward + self.gamma * np.array(qmax) - qset[sel_index]) if i == qset[sel_index] else 0), qset)
-		td_error = map((lambda i: qtarget - qset[sel_index] if i == qset[sel_index] else 0), qset)
+		error = self.alpha*((reward + self.gamma*qmax)-qset[sel_index])
+		td_error = map((lambda i: error if i == qset[sel_index] else 0), qset)
 
 		# Calculate deltas
 		delta = []
-		delta.insert(0, np.diag(map(self.aFn.delta, activation[-1])))
+		delta.insert(0, np.diag(map(ActivationFunctions.Linear.delta, activation[-1])))
 
 		for i in range(self.depth-2, -1, -1):
 			del_activation_matrix = np.diag(map(self.aFn.delta, activation[i]))
@@ -214,10 +213,10 @@ class NeuralNetwork:
 
 		# Update weights
 		for i in range(self.depth):
-			ssq += np.sum(del_w[i])
+			ssq += np.sum(del_w[i] ** 2)
 			self.network[i] += del_w[i]
 
-		return ssq
+		return np.sqrt(ssq)
 
 	def train(self, maxepochs=1000, batch=10, replay_size=1000000, verbose=False, progress=False, save=False, filename='', autosave=100, savestats=False):
 
@@ -257,6 +256,8 @@ class NeuralNetwork:
 				i += 1
 				qset = self.propagate(normalize(game.grid_to_input())).tolist()
 
+				print qset
+
 				if random.random() < self.epsilon(float(epochs)/maxepochs):
 					index = random.randint(0, 3)		# Choose random action
 				else:
@@ -268,9 +269,8 @@ class NeuralNetwork:
 				state = game.currState
 				halt = state.halt
 
-
 				# Add transition to experience
-				replay.append((qset, reward, game.grid_to_input(), game.currState, index, input, ))
+				replay.append((qset, reward, game.grid_to_input(), index, input, ))
 				if len(replay) > replay_size:
 					replay.pop(0)
 
@@ -295,9 +295,8 @@ class NeuralNetwork:
 						batch_w[i] += dw[i]
 
 			# Learn from minibatch
-			# norm = self.learn(batch_w, batch_b)
-			# normdata.append(norm)
-
+			norm = self.learn(batch_w, batch_b)
+			normdata.append(norm)
 
 			for i in range(self.depth):
 				batch_b[i].fill(0)

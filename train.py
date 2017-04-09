@@ -6,7 +6,7 @@ from functions import ActivationFunctions
 name = 'hope'
 # nn = NeuralNetwork.load('./trainlogs/letshope.nn')
 #
-nn = NeuralNetwork([16, 16, 16, 16, 4], 4, afn=ActivationFunctions.Softplus)
+nn = NeuralNetwork([16, 16, 16, 16, 4], 4, afn=ActivationFunctions.Sigmoid)
 
 print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']
@@ -17,12 +17,12 @@ nn.train(
 	verbose=False,
 	progress=True,
 	save=True,
-	maxepochs=50000,
-	batch=20,
+	maxepochs=1000000,
+	batch=30,
 	replay_size=100000,
 	filename=name,
-	autosave=500,
-	savestats=True
+	autosave=250,
+	savestats=True,
 )
 
 print json.dumps(nn.batchplay(n=100, progress=True), indent=2)

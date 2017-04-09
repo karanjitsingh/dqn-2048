@@ -8,7 +8,7 @@ class Sigmoid(float or list):
 		if type(x) == list:
 			return [1/(1+exp(-1*i)) for i in x]
 		else:
-			return 1/(1+exp(-1*i))
+			return 1/(1+exp(-1*x))
 
 	@staticmethod
 	def delta(x):
