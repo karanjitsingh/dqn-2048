@@ -155,20 +155,21 @@ class NeuralNetwork:
 	def td_gradient(self, qset, reward, next_input, state, sel_index, input):			# Temporal difference back propagation
 		activation = self.propagate(normalize(next_input), True)
 
-		qtarget = map(lambda i: self.reward(state, Game.get_next_state(state, direction=Game.getdirection(i))), [0,1,2,3])
+		# qtarget = map(lambda i: self.reward(state, Game.get_next_state(state, direction=Game.getdirection(i))), [0,1,2,3])
 
-		# qmax = max(activation[-1].tolist())
-		qmax = max(qtarget)
+		qmax = max(activation[-1].tolist())
+		qtarget = qset[sel_index]+self.alpha*((reward + self.gamma*qmax)-qset[sel_index])
 
 		# td_error = reward + self.gamma * np.array(qmax) - qset
-		td_error = map((lambda i: (reward + self.gamma * np.array(qmax) - qset[sel_index])*2 if i == qset[sel_index] else 0), qset)
+		# td_error = map((lambda i: (reward + self.gamma * np.array(qmax) - qset[sel_index]) if i == qset[sel_index] else 0), qset)
+		td_error = map((lambda i: qtarget - qset[sel_index] if i == qset[sel_index] else 0), qset)
 
 		# Calculate deltas
 		delta = []
-		delta.insert(0, np.diag(map(lambda x: 1, activation[-1])))
+		delta.insert(0, np.diag(map(self.aFn.delta, activation[-1])))
 
 		for i in range(self.depth-2, -1, -1):
-			del_activation_matrix = np.diag(map(lambda x: 1, activation[i]))
+			del_activation_matrix = np.diag(map(self.aFn.delta, activation[i]))
 			weights = self.network[i+1]
 			product = np.matmul(del_activation_matrix, weights.transpose())
 			delta_i = np.matmul(product, delta[0])

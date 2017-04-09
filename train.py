@@ -1,11 +1,12 @@
 from NeuralNetwork import NeuralNetwork
 import json
 from datetime import datetime
+from functions import ActivationFunctions
 
 name = 'hope'
 # nn = NeuralNetwork.load('./trainlogs/letshope.nn')
 #
-nn = NeuralNetwork([16, 16, 16, 16, 4], 4)
+nn = NeuralNetwork([16, 16, 16, 16, 4], 4, afn=ActivationFunctions.Softplus)
 
 print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']
