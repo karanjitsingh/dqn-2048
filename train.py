@@ -4,8 +4,8 @@ from datetime import datetime
 from functions import ActivationFunctions
 
 name = 'hope'
-# nn = NeuralNetwork.load('./trainlogs/letshope.nn')
-#
+# nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
+
 nn = NeuralNetwork([16, 16, 16, 16, 4], 4, afn=ActivationFunctions.Sigmoid)
 
 print "Training \"" + name + "\""
@@ -21,7 +21,7 @@ nn.train(
 	batch=30,
 	replay_size=100000,
 	filename=name,
-	autosave=250,
+	autosave=2500,
 	savestats=True,
 )
 

@@ -26,8 +26,8 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.0025			# learning rate
-		self.epsilon = Gradients.Exponential(1, 0.05)
+		self.alpha = 0.002			# learning rate
+		self.epsilon = Gradients.Const(0.8)
 
 		# Game settings
 		self.gamedim = gamedim
@@ -106,20 +106,7 @@ class NeuralNetwork:
 		if not tostate.valid:
 			return -1
 		elif tostate.score - fromstate.score > 0:
-			# x = 0
-			# y = 0
-			# for i in range(len(fromstate.grid)):
-			# 	for j in range(len(fromstate.grid)):
-			# 		if not fromstate.grid[i][j]:
-			# 			x += 1
-			# 		if not tostate.grid[i][j]:
-			# 			y += 1
-			# if y >= x:
-			# 	return 1
-
-			# return 1
-			# return math.log(tostate.score - fromstate.score, 2)
-			return 1/(1+np.exp(-1 * np.log2(tostate.score - fromstate.score)))
+			return np.log2(tostate.score - fromstate.score)/16
 		return 0
 
 	def print_network(self, biases=True, layers=True):
@@ -256,8 +243,6 @@ class NeuralNetwork:
 				i += 1
 				qset = self.propagate(normalize(game.grid_to_input())).tolist()
 
-				print qset
-
 				if random.random() < self.epsilon(float(epochs)/maxepochs):
 					index = random.randint(0, 3)		# Choose random action
 				else:
@@ -314,8 +299,8 @@ class NeuralNetwork:
 				self.stats['trainingEpochs'] += autosave
 				self.save(filename=filename)
 				self.savereplay(replay, filename=filename)
-				# normchart.write("\n" + ("\n".join(map(str, normdata))))
-				# normdata = []
+				normchart.write("\n" + ("\n".join(map(str, normdata))))
+				normdata = []
 				if savestats:
 					self.savestats(filename=filename)
 
