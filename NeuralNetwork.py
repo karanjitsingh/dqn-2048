@@ -27,7 +27,7 @@ class NeuralNetwork:
 		# Constants
 		self.gamma = 0.8			# Discounted reward constant
 		self.alpha = 0.002			# learning rate
-		self.epsilon = Gradients.Const(0.8)
+		self.epsilon = Gradients.Const(0.1)
 
 		# Game settings
 		self.gamedim = gamedim
