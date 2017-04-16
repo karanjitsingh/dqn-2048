@@ -25,9 +25,9 @@ class NeuralNetwork:
 
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
-		self.gamma = 0.8			# Discounted reward constant
-		self.alpha = 0.002			# learning rate
-		self.epsilon = Gradients.Const(0.1)
+		self.gamma = 0.9			# Discounted reward constant
+		self.alpha = 0.02			# learning rate
+		self.epsilon = Gradients.Exponential(1, 0.01)
 
 		# Game settings
 		self.gamedim = gamedim
@@ -128,10 +128,7 @@ class NeuralNetwork:
 		for i in range(len(self.layers)):
 			output = np.array([])
 			for x in range(self.layers[i]):
-				if i == len(self.layers) - 1:
-					output = np.append(output, np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x])
-				else:
-					output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x]))
+				output = np.append(output, self.aFn(np.dot(inputmatrix, self.network[i][x]) + self.biases[i][x]))
 			inputmatrix = output
 
 			if returnActivations:
@@ -152,7 +149,7 @@ class NeuralNetwork:
 
 		# Calculate deltas
 		delta = []
-		delta.insert(0, np.diag(map(ActivationFunctions.Linear.delta, activation[-1])))
+		delta.insert(0, np.diag(map(self.aFn.delta, activation[-1])))
 
 		for i in range(self.depth-2, -1, -1):
 			del_activation_matrix = np.diag(map(self.aFn.delta, activation[i]))
@@ -242,6 +239,7 @@ class NeuralNetwork:
 			while not halt:
 				i += 1
 				qset = self.propagate(normalize(game.grid_to_input())).tolist()
+				print qset
 
 				if random.random() < self.epsilon(float(epochs)/maxepochs):
 					index = random.randint(0, 3)		# Choose random action

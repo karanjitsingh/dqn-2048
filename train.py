@@ -3,10 +3,10 @@ import json
 from datetime import datetime
 from functions import ActivationFunctions
 
-name = 'hope'
-nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
-#
-# nn = NeuralNetwork([16, 16, 16, 16, 4], 4, afn=ActivationFunctions.Sigmoid)
+name = 'hawking'
+# nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
+
+nn = NeuralNetwork([16, 4], 4, afn=ActivationFunctions.Sigmoid)
 
 print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']
@@ -17,11 +17,11 @@ nn.train(
 	verbose=False,
 	progress=True,
 	save=True,
-	maxepochs=1000000,
+	maxepochs=100000,
 	batch=30,
-	replay_size=100000,
+	replay_size=1000000,
 	filename=name,
-	autosave=2500,
+	autosave=100,
 	savestats=True,
 )
 
