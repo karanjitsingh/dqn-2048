@@ -18,7 +18,9 @@ sys.modules['Gradients'] = Gradients
 
 
 def normalize(v):
-	return map(lambda x: math.log(x,2) if x else x, v)
+	mag = np.sqrt(np.sum(np.array(v) ** 2))
+	# return map(lambda x: math.log(x,2) if x else x, v)
+	return map(lambda x: x/mag, v)
 
 
 class NeuralNetwork:
@@ -26,7 +28,7 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.9			# Discounted reward constant
-		self.alpha = 0.02			# learning rate
+		self.alpha = 0.01			# learning rate
 		self.epsilon = Gradients.Exponential(1, 0.01)
 
 		# Game settings
@@ -106,7 +108,8 @@ class NeuralNetwork:
 		if not tostate.valid:
 			return -1
 		elif tostate.score - fromstate.score > 0:
-			return np.log2(tostate.score - fromstate.score)/16
+			# return np.log2(tostate.score - fromstate.score)/16
+			return 1
 		return 0
 
 	def print_network(self, biases=True, layers=True):
@@ -146,6 +149,7 @@ class NeuralNetwork:
 
 		error = self.alpha*((reward + self.gamma*qmax)-qset[sel_index])
 		td_error = map((lambda i: error if i == qset[sel_index] else 0), qset)
+		print td_error
 
 		# Calculate deltas
 		delta = []
@@ -225,6 +229,8 @@ class NeuralNetwork:
 		normchart = open("./trainlogs/" + filename + ".norm", "a")
 		normdata = []
 
+		print "Replay: ", len(replay)
+
 		while epochs < maxepochs:
 			game = Game(self.gamedim)
 			halt = False
@@ -235,11 +241,11 @@ class NeuralNetwork:
 
 			state = game.currState
 
+
 			i = 0
 			while not halt:
 				i += 1
 				qset = self.propagate(normalize(game.grid_to_input())).tolist()
-				print qset
 
 				if random.random() < self.epsilon(float(epochs)/maxepochs):
 					index = random.randint(0, 3)		# Choose random action

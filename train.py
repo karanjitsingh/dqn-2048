@@ -1,12 +1,23 @@
 from NeuralNetwork import NeuralNetwork
+from functions import ActivationFunctions
+from functions import Gradients
+import sys
+
 import json
 from datetime import datetime
 from functions import ActivationFunctions
 
+
+# Pickle fix
+sys.modules['ActivationFunctions'] = ActivationFunctions
+sys.modules['Gradients'] = Gradients
+
 name = 'hawking'
 # nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
 
-nn = NeuralNetwork([16, 4], 4, afn=ActivationFunctions.Sigmoid)
+nn = NeuralNetwork([32, 32, 4], 4, afn=ActivationFunctions.Sigmoid)
+#
+nn.epsilon = Gradients.Const(0.1)
 
 print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']
@@ -17,7 +28,7 @@ nn.train(
 	verbose=False,
 	progress=True,
 	save=True,
-	maxepochs=100000,
+	maxepochs=200000,
 	batch=30,
 	replay_size=1000000,
 	filename=name,
