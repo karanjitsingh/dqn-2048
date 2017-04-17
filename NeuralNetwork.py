@@ -18,6 +18,7 @@ sys.modules['Gradients'] = Gradients
 
 
 def normalize(v):
+	return v
 	mag = np.sqrt(np.sum(np.array(v) ** 2))
 	# return map(lambda x: math.log(x,2) if x else x, v)
 	return map(lambda x: x/mag, v)
@@ -149,7 +150,6 @@ class NeuralNetwork:
 
 		error = self.alpha*((reward + self.gamma*qmax)-qset[sel_index])
 		td_error = map((lambda i: error if i == qset[sel_index] else 0), qset)
-		print td_error
 
 		# Calculate deltas
 		delta = []
@@ -259,9 +259,10 @@ class NeuralNetwork:
 				halt = state.halt
 
 				# Add transition to experience
-				replay.append((qset, reward, game.grid_to_input(), index, input, ))
-				if len(replay) > replay_size:
-					replay.pop(0)
+				if not halt:
+					replay.append((qset, reward, game.grid_to_input(), index, input, ))
+					if len(replay) > replay_size:
+						replay.pop(0)
 
 				if verbose:
 					print "i:", i
@@ -269,6 +270,8 @@ class NeuralNetwork:
 					print "Reward: ", reward
 					print "Score: ", game.currState.score
 					print ""
+
+
 
 			# Learn from epoch / experience replay
 			if epochs > 1:

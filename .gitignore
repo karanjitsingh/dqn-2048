@@ -1,4 +1,6 @@
 *.pyc
+*.replay
+*.norm
 res/*
 pytest.py
 .idea/*

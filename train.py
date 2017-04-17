@@ -12,12 +12,12 @@ from functions import ActivationFunctions
 sys.modules['ActivationFunctions'] = ActivationFunctions
 sys.modules['Gradients'] = Gradients
 
-name = 'hawking'
-# nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
-
-nn = NeuralNetwork([32, 32, 4], 4, afn=ActivationFunctions.Sigmoid)
+name = 'no_normalize'
+nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
 #
-nn.epsilon = Gradients.Const(0.1)
+# nn = NeuralNetwork([32, 32, 4], 4, afn=ActivationFunctions.Sigmoid)
+#
+# nn.epsilon = Gradients.Const(0.1)
 
 print "Training \"" + name + "\""
 print "Total training epochs: ", nn.stats['trainingEpochs']
