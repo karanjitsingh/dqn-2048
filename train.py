@@ -12,11 +12,10 @@ from functions import ActivationFunctions
 sys.modules['ActivationFunctions'] = ActivationFunctions
 sys.modules['Gradients'] = Gradients
 
-name = 'no_normalize'
-nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
-#
-# nn = NeuralNetwork([32, 32, 4], 4, afn=ActivationFunctions.Sigmoid)
-#
+name = 'fresh'
+# nn = NeuralNetwork.load('./trainlogs/' + name + '.nn')
+
+nn = NeuralNetwork([32, 32, 4], 4, afn=ActivationFunctions.Sigmoid)
 # nn.epsilon = Gradients.Const(0.1)
 
 print "Training \"" + name + "\""
@@ -28,9 +27,9 @@ nn.train(
 	verbose=False,
 	progress=True,
 	save=True,
-	maxepochs=200000,
+	maxepochs=20000,
 	batch=30,
-	replay_size=1000000,
+	replay_size=100000,
 	filename=name,
 	autosave=100,
 	savestats=True,

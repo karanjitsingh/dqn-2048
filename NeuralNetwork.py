@@ -18,7 +18,6 @@ sys.modules['Gradients'] = Gradients
 
 
 def normalize(v):
-	return v
 	mag = np.sqrt(np.sum(np.array(v) ** 2))
 	# return map(lambda x: math.log(x,2) if x else x, v)
 	return map(lambda x: x/mag, v)
@@ -29,7 +28,7 @@ class NeuralNetwork:
 	def __init__(self, layers, gamedim, afn=ActivationFunctions.Sigmoid):
 		# Constants
 		self.gamma = 0.9			# Discounted reward constant
-		self.alpha = 0.01			# learning rate
+		self.alpha = 0.05			# learning rate
 		self.epsilon = Gradients.Exponential(1, 0.01)
 
 		# Game settings
@@ -241,8 +240,6 @@ class NeuralNetwork:
 
 			state = game.currState
 
-
-			i = 0
 			while not halt:
 				i += 1
 				qset = self.propagate(normalize(game.grid_to_input())).tolist()
@@ -271,12 +268,18 @@ class NeuralNetwork:
 					print "Score: ", game.currState.score
 					print ""
 
-
-
 			# Learn from epoch / experience replay
 			if epochs > 1:
+				action_count = [0, 0, 0, 0]
 				for j in range(batch):
-					index = random.randint(0, len(replay) - 1)
+
+					# Balance actions
+					while 1:
+						index = random.randint(0, len(replay) - 1)
+						action = replay[index][3]
+						if action_count[action] + 1 <= batch/4 + 1:
+							action_count[action] += 1
+							break
 
 					# Generate gradients with TD backpropagation
 					dw, db = self.td_gradient(*(replay[index]))
@@ -285,6 +288,8 @@ class NeuralNetwork:
 					for i in range(self.depth):
 						batch_b[i] += db[i]
 						batch_w[i] += dw[i]
+
+				print action_count
 
 			# Learn from minibatch
 			norm = self.learn(batch_w, batch_b)
