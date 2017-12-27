@@ -7,6 +7,7 @@ class Exponential:
 		self.stop = stop
 
 	def __call__(self, step):
+		value = np.exp(np.log(self.stop) * step)
 		return self.start * np.exp(np.log(self.stop) * step)
 
 

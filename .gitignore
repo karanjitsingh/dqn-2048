@@ -4,3 +4,4 @@
 res/*
 pytest.py
 .idea/*
+log*

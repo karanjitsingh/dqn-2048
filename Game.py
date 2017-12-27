@@ -3,12 +3,13 @@ import copy
 
 
 class State(object):
-	def __init__(self, grid, score, halt=False, full=False, valid=True):
+	def __init__(self, grid, score, empty_tiles, halt=False, full=False, valid=True):
 		self.grid = grid
 		self.score = score
 		self.halt = halt
 		self.full = full
 		self.valid = valid
+		self.empty_tiles = empty_tiles
 
 	def printstate(self):
 		grid = self.grid
@@ -62,6 +63,8 @@ class Game(object):
 		valid = False
 		full = True
 
+		empty_tiles = 0
+
 		for y in range(n):
 			r = row = grid[y]
 			r = filter(lambda a: a != 0, r)
@@ -91,8 +94,10 @@ class Game(object):
 			if row != grid[y]:
 				valid = True
 
-			if len(zeroes):
-				full = False
+			empty_tiles += len(zeroes)
+
+		if empty_tiles:
+			full = False
 
 		if direction[1] != 0:
 			grid = map(list, zip(*grid))
@@ -108,8 +113,9 @@ class Game(object):
 
 		if not full and valid:
 			grid = Game.add_random(grid)
+			empty_tiles -= 1
 
-		return State(grid, state.score+score, halt, full, valid)
+		return State(grid, state.score+score, empty_tiles, halt, full, valid)
 
 	@staticmethod
 	def add_random(grid):
@@ -131,7 +137,7 @@ class Game(object):
 		self.grid = grid
 		if not grid:
 			self.emptygrid(size)
-		self.initState = State(grid, 0)
+		self.initState = State(grid, 0, size*size - 2)
 		self.currState = self.initState
 
 	def emptygrid(self, size, value=0):
