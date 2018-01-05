@@ -17,7 +17,7 @@ import ast
 #
 # Process command line args
 #
-argv = [sys.argv[0], "[16,256,4]", "0.01", "0.8", "10000"]
+argv = [sys.argv[0], "[16,256,4]", "0.01", "0.8", "50000"]
 print argv
 sys.argv = argv
 
@@ -52,28 +52,101 @@ parse_cli()
 #
 tf.reset_default_graph()
 
-# These lines establish the feed-forward part of the network used to choose actions
 inputs1 = tf.placeholder(shape=[1, 16], dtype=tf.float32)
 
-last_layer = 16
-weights = []
-biases = []
-activation = [inputs1]
 
-for i, n in enumerate(hidden_layers):
-	weights.append(tf.Variable(tf.random_normal([last_layer, n], -0.1, 0.1)))
-	biases.append(tf.Variable(tf.constant(0.1, shape=[n])))
-	activation.append(tf.nn.relu(tf.add(tf.matmul(activation[i], weights[i]), biases[i])))
-	last_layer = n
+def classic_nn():
+	last_layer = 16
+	weights = []
+	biases = []
 
-weights.append(tf.Variable(tf.random_normal([last_layer, 4], -0.1, 0.1)))
-biases.append(tf.Variable(tf.constant(0.1, shape=[4])))
+	activation = [inputs1]
 
-Qout = tf.nn.relu(tf.add(tf.matmul(activation[-1], weights[-1]), biases[-1]))
+	for i, n in enumerate(hidden_layers):
+		weights.append(tf.Variable(tf.truncated_normal([last_layer, n], 0, 0.1)))
+		biases.append(tf.Variable(tf.constant(0.1, shape=[n])))
+		activation.append(tf.nn.relu(tf.add(tf.matmul(activation[i], weights[i]), biases[i])))
+		last_layer = n
+
+	weights.append(tf.Variable(tf.truncated_normal([last_layer, 4], 0, 0.1)))
+	biases.append(tf.Variable(tf.constant(0.1, shape=[4])))
+
+	return tf.nn.relu(tf.add(tf.matmul(activation[-1], weights[-1]), biases[-1]))
+
+
+def conv_nn():
+	def new_weights(shape):
+		return tf.Variable(tf.truncated_normal(shape, stddev=0.1))
+
+
+	def new_biases(length):
+		return tf.Variable(tf.constant(0.1, shape=[length]))
+
+
+	def new_conf_layer(input, filter_size, num_filters):
+		shape = [filter_size, filter_size,1,num_filters]
+		weights = new_weights(shape)
+		biases = new_biases(length=num_filters)
+
+		layer=tf.nn.conv2d(input=input,
+						   filter=weights,
+						   strides=[1,1,1,1],
+						   padding='SAME') + biases
+
+		layer = tf.nn.relu(layer)
+
+		return layer, weights
+
+	def new_fc_layer(input,
+					 num_inputs,
+					 num_outputs,
+					 use_relu=True):
+
+		weights = new_weights(shape=[num_inputs, num_outputs])
+		biases = new_biases(length=num_outputs)
+
+		layer = tf.matmul(input, weights) + biases
+
+		if use_relu:
+			layer = tf.nn.relu(layer)
+
+		return layer
+
+	def flatten_layer(layer):
+
+		layer_shape = layer.get_shape()
+		num_features = np.array(layer_shape[1:4], dtype=int).prod()
+		layer_flat = tf.reshape(layer, [-1, num_features])
+
+		return layer_flat, num_features
+
+	inputs_2d= tf.reshape(inputs1, [-1, 4, 4, 1])
+
+	layer_1, _ = new_conf_layer(inputs_2d, filter_size=2, num_filters=9)
+
+
+
+	layer_flat, num_features = flatten_layer(layer_1)
+
+
+	layer_fc1 = new_fc_layer(input = layer_flat,
+							 num_inputs= num_features,
+							 num_outputs= 64)
+
+	layer_fc2 = new_fc_layer(input= layer_fc1,
+							 num_inputs= 64,
+							 num_outputs= 4)
+
+	return layer_fc2
+
+
+
+# Qout = classic_nn()
+Qout = conv_nn()
 Qmean = tf.reduce_mean(Qout)
-
-
+Qmax = tf.reduce_max(Qout)
 predict = tf.argmax(Qout, 1)
+
 
 # Below we obtain the loss by taking the sum of squares difference between the target and prediction Q values.
 nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
@@ -87,7 +160,7 @@ init = tf.global_variables_initializer()
 y = args["discount-factor"]
 e = 0.15
 
-epsilon = Gradients.Exponential(start=0.9, stop=0.01)
+epsilon = Gradients.Exponential(start=0.9, stop=0.001)
 num_episodes = args["epochs"]
 
 
@@ -132,7 +205,7 @@ with tf.Session() as sess:
 			policy_action = 0
 			sorted_action = np.argsort(-np.array(allQ))[0]
 
-			if np.random.rand(1) < e:
+			if np.random.rand(1) < (epsilon(i/15000.0) if i < 15000 else 0):
 				a[0] = random.randint(0, 3)
 				rand_steps += 1
 				random_action = True
@@ -151,27 +224,28 @@ with tf.Session() as sess:
 					while b == a[0]:
 						b = random.randint(0, 3)
 					a[0] = b
-				else:
-					policy_action += 1
-					a[0] = sorted_action[policy_action]
+				# else:
+				# 	policy_action += 1
+				# 	a[0] = sorted_action[policy_action]
 				nextstate = game.transition(a[0])
 
-			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
-
 			# Get new state and reward from environment
-			r = reward(currstate, nextstate)
+
+			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
+			r = reward(currstate, nextstate) * np.log2(maxtile) / 10.0
+
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
 
-			if maxtile == 256:
-				halt = True
+			if halt:
+				r = -1
 
 			# Obtain the Q' values by feeding the new state through our network
 			Q1 = sess.run(Qout, feed_dict={inputs1: [s1]})
 			# Obtain maxQ' and set our target value for chosen action.
 			maxQ1 = np.max(Q1)
 			targetQ = allQ
-			targetQ[0, a[0]] = r + (y*maxQ1 if halt else 0)
+			targetQ[0, a[0]] = r + (0 if halt else y*maxQ1)
 
 			# Train our network using target and predicted Q values
 			_, summary = sess.run([updateModel, summary_op], feed_dict={inputs1: [s], nextQ: targetQ})
@@ -180,10 +254,6 @@ with tf.Session() as sess:
 			reward_sum += r
 
 			s = s1
-
-		# Reduce chance of random action as we train the model.
-		# value = float(i+1)/num_episodes
-		# e = epsilon(value)
 
 		stat = dict()
 		maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
@@ -199,6 +269,10 @@ with tf.Session() as sess:
 			tf.Summary.Value(tag=str(trainer_id + "/steps"), simple_value=steps),
 		])
 
+		summary = tf.Summary(value=[
+			tf.Summary.Value(tag=str(trainer_id + "/epsilon"), simple_value=(epsilon(i/15000.0) if i < 15000 else 0)),
+		])
+
 		writer.add_summary(summary, i)
 
 		summary = tf.Summary(value=[
@@ -212,8 +286,9 @@ with tf.Session() as sess:
 		writer.add_summary(summary, i)
 
 		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/epsilon"), simple_value=e),
+			tf.Summary.Value(tag=str(trainer_id + "/rand_steps"), simple_value=float(rand_steps)/steps),
 		])
+
 		writer.add_summary(summary, i)
 
 		summary = tf.Summary(value=[
