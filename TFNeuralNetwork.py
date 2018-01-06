@@ -17,7 +17,7 @@ import ast
 #
 # Process command line args
 #
-argv = [sys.argv[0], "[16,256,4]", "0.01", "0.8", "50000"]
+argv = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "50000"]
 print argv
 sys.argv = argv
 
@@ -140,6 +140,15 @@ def conv_nn():
 	return layer_fc2
 
 
+def write_scalar_summaries(summary_writer, summary_id, step, summary_list):
+	for t in summary_list:
+		s = tf.Summary(value=[
+			tf.Summary.Value(tag=str(summary_id + "/" + t[0]), simple_value=t[1]),
+		])
+
+		summary_writer.add_summary(s, step)
+
+
 
 # Qout = classic_nn()
 Qout = conv_nn()
@@ -236,9 +245,9 @@ with tf.Session() as sess:
 
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
-
-			if halt:
-				r = -1
+			#
+			# if halt:
+			# 	r = -1
 
 			# Obtain the Q' values by feeding the new state through our network
 			Q1 = sess.run(Qout, feed_dict={inputs1: [s1]})
@@ -265,36 +274,14 @@ with tf.Session() as sess:
 		# stat['loss'] = l
 		total_steps += steps
 
-		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/steps"), simple_value=steps),
+		write_scalar_summaries(writer, trainer_id, i, [
+			("steps", steps),
+			("epsilon", (epsilon(i/15000.0) if i < 15000 else 0)),
+			("score", game.currState.score),
+			("net_reward", reward_sum),
+			("rand_steps", float(rand_steps)/steps),
+			("maxtile", maxtile)
 		])
-
-		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/epsilon"), simple_value=(epsilon(i/15000.0) if i < 15000 else 0)),
-		])
-
-		writer.add_summary(summary, i)
-
-		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/score"), simple_value=game.currState.score),
-		])
-		writer.add_summary(summary, i)
-
-		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/net_reward"), simple_value=reward_sum),
-		])
-		writer.add_summary(summary, i)
-
-		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/rand_steps"), simple_value=float(rand_steps)/steps),
-		])
-
-		writer.add_summary(summary, i)
-
-		summary = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/maxtile"), simple_value=maxtile),
-		])
-		writer.add_summary(summary, i)
 
 		print i, "\t", stat
 		rList.append(reward_sum)
