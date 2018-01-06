@@ -13,11 +13,12 @@ from functions.General import *
 import math
 import argparse
 import ast
+import shutil
 
 #
 # Process command line args
 #
-argv = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "50000"]
+argv = [sys.argv[0], "[16,256,4]", "0.1", "0.2", "50000"]
 print argv
 sys.argv = argv
 
@@ -93,7 +94,12 @@ def conv_nn():
 						   strides=[1,1,1,1],
 						   padding='SAME') + biases
 
-		layer = tf.nn.relu(layer)
+		layer = tf.nn.max_pool(value=layer,
+							   ksize=[1,2,2,1],
+							   strides=[1,2,2,1],
+							   padding='SAME')
+
+		layer = tf.nn.sigmoid(layer)
 
 		return layer, weights
 
@@ -128,13 +134,18 @@ def conv_nn():
 
 	layer_flat, num_features = flatten_layer(layer_1)
 
+	inputs_2d = tf.reshape(layer_flat, [-1, 6, 6, 1])
+
+	layer_2, _ = new_conf_layer(inputs_2d, filter_size=2, num_filters = 4)
+
+	layer_flat, num_features = flatten_layer(layer_2)
 
 	layer_fc1 = new_fc_layer(input = layer_flat,
 							 num_inputs= num_features,
-							 num_outputs= 64)
+							 num_outputs= 36)
 
 	layer_fc2 = new_fc_layer(input= layer_fc1,
-							 num_inputs= 64,
+							 num_inputs= 36,
 							 num_outputs= 4)
 
 	return layer_fc2
@@ -169,13 +180,14 @@ init = tf.global_variables_initializer()
 y = args["discount-factor"]
 e = 0.15
 
-epsilon = Gradients.Exponential(start=0.9, stop=0.001)
+epsilon = Gradients.Exponential(start=0.7, stop=0.001)
 num_episodes = args["epochs"]
 
 
 with tf.name_scope(trainer_id):
 	tf.summary.scalar("loss", loss)
 	tf.summary.scalar("Qmean", Qmean)
+	tf.summary.scalar("Qmax", Qmax)
 
 summary_op = tf.summary.merge_all()
 #
@@ -188,6 +200,10 @@ rList = []
 with tf.Session() as sess:
 	sess.run(init)
 
+	try:
+		shutil.rmtree("./log")
+	except:
+		pass
 	writer = tf.summary.FileWriter("./log", graph=tf.get_default_graph())
 	score = 0
 	total_steps = 0
@@ -214,7 +230,7 @@ with tf.Session() as sess:
 			policy_action = 0
 			sorted_action = np.argsort(-np.array(allQ))[0]
 
-			if np.random.rand(1) < (epsilon(i/15000.0) if i < 15000 else 0):
+			if np.random.rand(1) < (epsilon(i/2000.0) if i < 2000 else 0):
 				a[0] = random.randint(0, 3)
 				rand_steps += 1
 				random_action = True
@@ -241,7 +257,11 @@ with tf.Session() as sess:
 			# Get new state and reward from environment
 
 			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
-			r = reward(currstate, nextstate) * np.log2(maxtile) / 10.0
+
+			r = reward(currstate, nextstate)
+			if r is not 0:
+				r = np.log2(nextstate.score - currstate.score)/10.0
+
 
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
@@ -254,7 +274,7 @@ with tf.Session() as sess:
 			# Obtain maxQ' and set our target value for chosen action.
 			maxQ1 = np.max(Q1)
 			targetQ = allQ
-			targetQ[0, a[0]] = r + (0 if halt else y*maxQ1)
+			targetQ[0, a[0]] = r + y*maxQ1
 
 			# Train our network using target and predicted Q values
 			_, summary = sess.run([updateModel, summary_op], feed_dict={inputs1: [s], nextQ: targetQ})
@@ -276,9 +296,8 @@ with tf.Session() as sess:
 
 		write_scalar_summaries(writer, trainer_id, i, [
 			("steps", steps),
-			("epsilon", (epsilon(i/15000.0) if i < 15000 else 0)),
+			("epsilon", (epsilon(i/2000.0) if i < 2000 else 0)),
 			("score", game.currState.score),
-			("net_reward", reward_sum),
 			("rand_steps", float(rand_steps)/steps),
 			("maxtile", maxtile)
 		])
