@@ -88,6 +88,7 @@ with tf.Session() as sess:
 		halt = False
 		steps = 0
 		rand_steps = 0
+		invalid_steps = 0
 		# The Q-Network
 		while not halt:
 			steps += 1
@@ -114,16 +115,18 @@ with tf.Session() as sess:
 
 			nextstate = game.transition(a[0])
 
-			if not nextstate.halt and not nextstate.valid:
-				if random_action:
-					b = a[0]
-					while b == a[0]:
-						b = random.randint(0, 3)
-					a[0] = b
-				else:  # ignore invalid action
-					policy_action += 1
-					a[0] = sorted_action[policy_action]
-				nextstate = game.transition(a[0])
+			if not nextstate.halt:
+				while not nextstate.valid:
+					if random_action:
+						b = a[0]
+						while b == a[0]:
+							b = random.randint(0, 3)
+						a[0] = b
+					else:  # ignore invalid action
+						invalid_steps += 1
+						policy_action += 1
+						a[0] = sorted_action[policy_action]
+					nextstate = game.transition(a[0])
 
 			# Get new state and reward from environment
 
@@ -166,8 +169,9 @@ with tf.Session() as sess:
 			("steps", steps),
 			("epsilon", epsilon(i)),
 			("score", game.currState.score),
-			("rand_steps", float(rand_steps)/steps),
-			("maxtile", maxtile)
+			("rand-steps", float(rand_steps)/steps),
+			("maxtile", maxtile),
+			("invalid-steps", invalid_steps)
 		], i)
 
 		print i, "\t", stat
