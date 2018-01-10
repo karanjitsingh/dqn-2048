@@ -2,7 +2,7 @@ import os
 import sys
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
+# os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 import numpy as np
 import random
@@ -16,7 +16,7 @@ import TFNetwork
 import TFSummary
 
 
-default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.2", "10", "\"AAA\""]
+default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.2", "100000", "\"AAA\""]
 print "Using default arguments: ", default_args
 sys.argv = default_args
 
@@ -66,7 +66,7 @@ _epsilon = Gradients.Exponential(start=1, stop=0.1)
 def epsilon(i):
 	# Exponentially decreasing epsilon to 0.1 for first 25% epochs, constant value of 0.1 from there on
 	if i<num_episodes/4.0:
-		return _epsilon(i/num_episodes/4.0)
+		return _epsilon(i/(num_episodes/4.0))
 	else:
 		return 0.1
 
@@ -116,6 +116,9 @@ with tf.Session() as sess:
 			nextstate = game.transition(a[0])
 
 			if not nextstate.halt:
+				if not nextstate.valid and not random_action:
+					invalid_steps += 1
+
 				while not nextstate.valid:
 					if random_action:
 						b = a[0]
@@ -123,7 +126,6 @@ with tf.Session() as sess:
 							b = random.randint(0, 3)
 						a[0] = b
 					else:  # ignore invalid action
-						invalid_steps += 1
 						policy_action += 1
 						a[0] = sorted_action[policy_action]
 					nextstate = game.transition(a[0])
