@@ -16,7 +16,7 @@ import TFNetwork
 import TFSummary
 
 
-default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.2", "100000", "\"AAA\""]
+default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "300000", "\"AAA\""]
 print "Using default arguments: ", default_args
 sys.argv = default_args
 

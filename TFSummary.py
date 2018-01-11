@@ -1,9 +1,18 @@
 import tensorflow as tf
 import shutil
+import sys
+import os
 
-log_path = "./log"
+if sys.gettrace() is None:
+	log_path = "./log"
+else:
+	log_path = "./debug"
+
+print log_path
+
 writer = None
 trainer_id = ''
+
 
 
 def init_summary_writer(training_id, var_list):
@@ -11,10 +20,12 @@ def init_summary_writer(training_id, var_list):
 		for tuple in var_list:
 			tf.summary.scalar(tuple[0], tuple[1])
 
-	try:
-		shutil.rmtree(log_path)
-	except:
-		pass
+	if os.path.isdir(log_path):
+		try:
+			shutil.rmtree(log_path)
+		except:
+			exit()
+			pass
 
 	global writer
 	global trainer_id

@@ -5,3 +5,4 @@ res/*
 pytest.py
 .idea/*
 log*
+debug*
