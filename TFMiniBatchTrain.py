@@ -78,6 +78,7 @@ summary_op = TFSummary.init_summary_writer(training_id=trainer_id, var_list=[("l
 
 memory = ReplayMemory(10000)
 
+
 with tf.Session() as sess:
 	sess.run(init)
 
@@ -139,6 +140,7 @@ with tf.Session() as sess:
 			r = reward(currstate, nextstate)
 			if r is not 0:
 				r = np.log2(nextstate.score - currstate.score)/10.0
+			reward_sum += r
 
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
@@ -146,18 +148,26 @@ with tf.Session() as sess:
 			memory.push((s, a[0], r, s1))
 
 			# Feed-forward
-			Q1 = sess.run(Qout, feed_dict={inputs: [s1]})
+			if memory.full:
+				replay = memory.sample(32)
 
-			# Obtain maxQ' and set our target value for chosen action.
-			maxQ1 = np.max(Q1)
-			targetQ = allQ
-			targetQ[0, a[0]] = r + gamma*maxQ1
+				for sample in replay:
+					state = sample[0]
+					action = sample[1]
+					rr = sample[2]
+					next_state = sample[3]
 
-			# Train our network using target and predicted Q values
-			_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: [s], nextQ: targetQ})
-			TFSummary.write_summary_operation(summary, total_steps+steps)
+					_, allQ = sess.run([predict, Qout], feed_dict={inputs: [state]})
+					Q1 = sess.run(Qout, feed_dict={inputs: [next_state]})
 
-			reward_sum += r
+					# Obtain maxQ' and set our target value for chosen action.
+					maxQ1 = np.max(Q1)
+					targetQ = allQ
+					targetQ[0, action] = rr + gamma*maxQ1
+
+					# Train our network using target and predicted Q values
+					_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: [state], nextQ: targetQ})
+					TFSummary.write_summary_operation(summary, total_steps+steps)
 
 			s = s1
 

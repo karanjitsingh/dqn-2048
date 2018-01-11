@@ -21,11 +21,13 @@ class ReplayMemory(object):
 		self.capacity = capacity
 		self.memory = []
 		self.position = 0
+		self.full = False
 
 	def push(self, memory_tuple):
 		self.memory.insert(0, memory_tuple)
 
 		if len(self.memory) > self.capacity:
+			self.full = True
 			self.memory.pop()
 
 	def sample(self, batch_size):
