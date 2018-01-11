@@ -14,6 +14,7 @@ import argparse
 import ast
 import TFNetwork
 import TFSummary
+import TFLosses
 
 
 default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "300000", "\"AAA\""]
@@ -51,7 +52,7 @@ predict = tf.argmax(Qout, 1)
 
 # Below we obtain the loss by taking the sum of squares difference between the target and prediction Q values.
 nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
-loss = tf.reduce_sum(tf.square(nextQ - Qout))
+loss = TFLosses.mse(nextQ - Qout)
 trainer = tf.train.GradientDescentOptimizer(learning_rate=args["learning-rate"])
 updateModel = trainer.minimize(loss)
 
