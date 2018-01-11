@@ -50,9 +50,8 @@ Qmax = tf.reduce_max(Qout)
 predict = tf.argmax(Qout, 1)
 
 
-# Below we obtain the loss by taking the sum of squares difference between the target and prediction Q values.
 nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
-loss = TFLosses.mse(nextQ - Qout)
+loss = TFLosses.mse(nextQ, Qout)
 trainer = tf.train.GradientDescentOptimizer(learning_rate=args["learning-rate"])
 updateModel = trainer.minimize(loss)
 
@@ -64,6 +63,8 @@ num_episodes = args["epochs"]
 
 # Random action strategy
 _epsilon = Gradients.Exponential(start=1, stop=0.1)
+
+
 def epsilon(i):
 	# Exponentially decreasing epsilon to 0.1 for first 25% epochs, constant value of 0.1 from there on
 	if i<num_episodes/4.0:
@@ -74,6 +75,8 @@ def epsilon(i):
 
 summary_op = TFSummary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
 
+
+memory = ReplayMemory(10000)
 
 with tf.Session() as sess:
 	sess.run(init)
@@ -140,6 +143,8 @@ with tf.Session() as sess:
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
 
+			memory.push((s, a[0], r, s1))
+
 			# Feed-forward
 			Q1 = sess.run(Qout, feed_dict={inputs: [s1]})
 
@@ -156,16 +161,14 @@ with tf.Session() as sess:
 
 			s = s1
 
-		stat = dict()
 		maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
-
-		stat = dict({
+		stat = {
 			'max-tile': maxtile,
 			'score': game.currState.score,
 			'steps': steps,
 			'r': reward_sum,
 			'rand-steps': "{0:.3f}".format(float(rand_steps) / steps)
-		})
+		}
 		total_steps += steps
 
 		TFSummary.write_scalar_summaries([

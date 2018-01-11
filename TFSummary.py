@@ -14,7 +14,6 @@ writer = None
 trainer_id = ''
 
 
-
 def init_summary_writer(training_id, var_list):
 	with tf.name_scope(training_id):
 		for tuple in var_list:
