@@ -51,7 +51,7 @@ predict = tf.argmax(Qout, 1)
 
 
 nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
-loss = TFLosses.mse(nextQ - Qout)
+loss = TFLosses.mse(nextQ, Qout)
 trainer = tf.train.GradientDescentOptimizer(learning_rate=args["learning-rate"])
 updateModel = trainer.minimize(loss)
 

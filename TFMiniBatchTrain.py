@@ -50,8 +50,8 @@ Qmax = tf.reduce_max(Qout)
 predict = tf.argmax(Qout, 1)
 
 
-nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
-loss = TFLosses.mse(nextQ, Qout)
+nextQ = tf.placeholder(shape=[None, 4], dtype=tf.float32)
+loss = tf.losses.huber_loss(nextQ, Qout)
 trainer = tf.train.GradientDescentOptimizer(learning_rate=args["learning-rate"])
 updateModel = trainer.minimize(loss)
 
@@ -145,11 +145,13 @@ with tf.Session() as sess:
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
 
-			memory.push((s, a[0], r, s1))
+			memory.push([s, a[0], r, s1])
 
 			# Feed-forward
 			if memory.full:
 				replay = memory.sample(32)
+				state_list = []
+				target_list = []
 
 				for sample in replay:
 					state = sample[0]
@@ -165,9 +167,11 @@ with tf.Session() as sess:
 					targetQ = allQ
 					targetQ[0, action] = rr + gamma*maxQ1
 
-					# Train our network using target and predicted Q values
-					_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: [state], nextQ: targetQ})
-					TFSummary.write_summary_operation(summary, total_steps+steps)
+					state_list.insert(0, state)
+					target_list.insert(0, targetQ[0])
+
+				_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: state_list, nextQ: target_list})
+				TFSummary.write_summary_operation(summary, total_steps + steps)
 
 			s = s1
 

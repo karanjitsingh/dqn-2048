@@ -26,7 +26,7 @@ def new_FCN(input_size, hidden_layers, output_size):
 
 def new_Conv(input_size, output_size):
 
-	inputs1 = tf.placeholder(shape=[1, input_size], dtype=tf.float32)
+	inputs1 = tf.placeholder(shape=[None, input_size], dtype=tf.float32)
 
 	def new_weights(shape):
 		return tf.Variable(tf.truncated_normal(shape, stddev=0.1))
