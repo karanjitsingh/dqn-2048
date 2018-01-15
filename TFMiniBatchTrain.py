@@ -17,7 +17,7 @@ import TFSummary
 import TFLosses
 
 
-default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "300000", "\"AAA\""]
+default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "15000", "\"AAA\""]
 print "Using default arguments: ", default_args
 sys.argv = default_args
 
@@ -138,8 +138,10 @@ with tf.Session() as sess:
 			# Get new state and reward from environment
 
 			r = reward(currstate, nextstate)
+			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
 			if r is not 0:
-				r = np.log2(nextstate.score - currstate.score)/10.0
+				# r = np.log2(nextstate.score - currstate.score)/10.0
+				r = np.log2(maxtile)/10.0
 			reward_sum += r
 
 			s1 = normalize(game.grid_to_input())
@@ -149,7 +151,7 @@ with tf.Session() as sess:
 
 			# Feed-forward
 			if memory.full:
-				replay = memory.sample(32)
+				replay = memory.sample(15)
 				state_list = []
 				target_list = []
 

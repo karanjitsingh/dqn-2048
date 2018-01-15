@@ -9,7 +9,7 @@ def new_FCN(input_size, hidden_layers, output_size):
 	weights = []
 	biases = []
 
-	inputs1 = tf.placeholder(shape=[1, input_size], dtype=tf.float32)
+	inputs1 = tf.placeholder(shape=[None, input_size], dtype=tf.float32)
 	activation = [inputs1]
 
 	for i, n in enumerate(hidden_layers):
@@ -21,7 +21,7 @@ def new_FCN(input_size, hidden_layers, output_size):
 	weights.append(tf.Variable(tf.truncated_normal([last_layer, output_size], 0, 0.1)))
 	biases.append(tf.Variable(tf.constant(0.1, shape=[output_size])))
 
-	return tf.nn.relu(tf.add(tf.matmul(activation[-1], weights[-1]), biases[-1]))
+	return tf.nn.relu(tf.add(tf.matmul(activation[-1], weights[-1]), biases[-1])), inputs1
 
 
 def new_Conv(input_size, output_size):
