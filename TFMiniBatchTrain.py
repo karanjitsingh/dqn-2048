@@ -100,10 +100,11 @@ with tf.Session() as sess:
 			currstate = game.currState
 			if i == 0:
 				game.printgrid()
+				print ""
 			# Choose an action by greedily (with e chance of random action) from the Q-network
 			a, allQ = sess.run([predict, Qout], feed_dict={inputs: [s]})
 
-
+			oa = a[0]
 
 			# Boltzman approach
 
@@ -113,15 +114,18 @@ with tf.Session() as sess:
 			prob = logits/logits_sum
 
 			invalid_action=[]
-			a[0] = np.random.choice([0,1,2,3], p=prob)
+			a[0] = np.random.choice([0,1,2,3], p=prob[0])
 			nextstate = game.transition(a[0])
 
-			if not next_state.halt:
-				while not next_state.valid:
+			if not nextstate.halt:
+				while not nextstate.valid:
 					invalid_action.append(a[0])
 					while a[0] in invalid_action:
-						a[0] = np.random.choice([0, 1, 2, 3], p=prob)
+						a[0] = np.random.choice([0, 1, 2, 3], p=prob[0])
 					nextstate = game.transition(a[0])
+
+			if a[0] == oa:
+				rand_steps += 1
 
 			# e-greedy approach
 			#
@@ -165,7 +169,7 @@ with tf.Session() as sess:
 			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
 			if r is not 0:
 				# r = np.log2(nextstate.score - currstate.score)/10.0
-				r = np.log2(maxtile)/10.0
+				r = np.log2(nextstate.score - currstate.score)/2.0
 			reward_sum += r
 
 			s1 = normalize(game.grid_to_input())
@@ -215,9 +219,9 @@ with tf.Session() as sess:
 			("steps", steps),
 			("epsilon", epsilon(i)),
 			("score", game.currState.score),
-			("rand-steps", float(rand_steps)/steps),
+			("rand-steps", 1 - float(rand_steps)/steps),
 			("maxtile", maxtile),
-			("invalid-steps", invalid_steps)
+			# ("invalid-steps", steps)
 		], i)
 
 		print i, "\t", stat
