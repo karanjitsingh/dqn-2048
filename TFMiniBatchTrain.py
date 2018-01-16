@@ -17,7 +17,7 @@ import TFSummary
 import TFLosses
 
 
-default_args = [sys.argv[0], "[16,256,256,256,4]", "0.1", "0.8", "30000", "\"AAA\""]
+default_args = [sys.argv[0], "[16,256,256,256,4]", "0.1", "0.92", "30000", "\"AAA\""]
 print "Using default arguments: ", default_args
 sys.argv = default_args
 
@@ -62,7 +62,7 @@ gamma = args["discount-factor"]
 num_episodes = args["epochs"]
 
 # Random action strategy
-_epsilon = Gradients.Exponential(start=1, stop=0.1)
+_epsilon = Gradients.Exponential(start=100, stop=0.5)
 
 
 def epsilon(i):
@@ -108,7 +108,7 @@ with tf.Session() as sess:
 
 			# Boltzman approach
 
-			logits = allQ/((1 - i/float(num_episodes)) * 1000.0)
+			logits = allQ/((1 - i/float(num_episodes)) * _epsilon(i/float(num_episodes)))
 			logits = np.exp(logits)
 			logits_sum = np.sum(logits)
 			prob = logits/logits_sum

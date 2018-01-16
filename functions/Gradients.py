@@ -3,12 +3,12 @@ import numpy as np
 
 class Exponential:
 	def __init__(self, start, stop):
-		self.start = start
-		self.stop = stop
+		self.start = float(start)
+		self.stop = float(stop)
 
 	def __call__(self, step):
-		value = np.exp(np.log(self.stop) * step)
-		return self.start * np.exp(np.log(self.stop) * step)
+		value = np.exp(np.log(self.stop/self.start) * step)
+		return self.start * value
 
 
 class Linear:
