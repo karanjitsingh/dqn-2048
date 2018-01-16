@@ -17,7 +17,7 @@ import TFSummary
 import TFLosses
 
 
-default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "15000", "\"AAA\""]
+default_args = [sys.argv[0], "[16,256,256,256,4]", "0.1", "0.8", "30000", "\"AAA\""]
 print "Using default arguments: ", default_args
 sys.argv = default_args
 
@@ -44,7 +44,7 @@ args, hidden_layers, trainer_id = parse_cli()
 
 
 # Initiailize TF Network and variables
-Qout, inputs = TFNetwork.new_Conv(16, 4)
+Qout, inputs = TFNetwork.new_FCN(16, hidden_layers, 4)
 Qmean = tf.reduce_mean(Qout)
 Qmax = tf.reduce_max(Qout)
 predict = tf.argmax(Qout, 1)
@@ -103,37 +103,61 @@ with tf.Session() as sess:
 			# Choose an action by greedily (with e chance of random action) from the Q-network
 			a, allQ = sess.run([predict, Qout], feed_dict={inputs: [s]})
 
-			random_action = False
-			policy_action = 0
-			sorted_action = np.argsort(-np.array(allQ))[0]
 
-			if np.random.rand(1) < epsilon(i):
-				a[0] = random.randint(0, 3)
-				rand_steps += 1
-				random_action = True
-				if i == 0:
-					print "random action: ", a[0]
-					print ""
-			elif i == 0:
-				print "policy action: ", a[0]
-				print ""
 
+			# Boltzman approach
+
+			logits = allQ/((1 - i/float(num_episodes)) * 1000.0)
+			logits = np.exp(logits)
+			logits_sum = np.sum(logits)
+			prob = logits/logits_sum
+
+			invalid_action=[]
+			a[0] = np.random.choice([0,1,2,3], p=prob)
 			nextstate = game.transition(a[0])
 
-			if not nextstate.halt:
-				if not nextstate.valid and not random_action:
-					invalid_steps += 1
-
-				while not nextstate.valid:
-					if random_action:
-						b = a[0]
-						while b == a[0]:
-							b = random.randint(0, 3)
-						a[0] = b
-					else:  # ignore invalid action
-						policy_action += 1
-						a[0] = sorted_action[policy_action]
+			if not next_state.halt:
+				while not next_state.valid:
+					invalid_action.append(a[0])
+					while a[0] in invalid_action:
+						a[0] = np.random.choice([0, 1, 2, 3], p=prob)
 					nextstate = game.transition(a[0])
+
+			# e-greedy approach
+			#
+			# random_action = False
+			# policy_action = 0
+			# sorted_action = np.argsort(-np.array(allQ))[0]
+			#
+			# if np.random.rand(1) < epsilon(i):
+			# 	a[0] = random.randint(0, 3)
+			# 	rand_steps += 1
+			# 	random_action = True
+			# 	if i == 0:
+			# 		print "random action: ", a[0]
+			# 		print ""
+			# elif i == 0:
+			# 	print "policy action: ", a[0]
+			# 	print ""
+			#
+			# nextstate = game.transition(a[0])
+			#
+			# if not nextstate.halt:
+			# 	if not nextstate.valid and not random_action:
+			# 		invalid_steps += 1
+			#
+			# 	while not nextstate.valid:
+			# 		if random_action:
+			# 			b = a[0]
+			# 			while b == a[0]:
+			# 				b = random.randint(0, 3)
+			# 			a[0] = b
+			# 		else:  # ignore invalid action
+			# 			policy_action += 1
+			# 			a[0] = sorted_action[policy_action]
+			# 		nextstate = game.transition(a[0])
+
+
 
 			# Get new state and reward from environment
 
