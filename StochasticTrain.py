@@ -12,9 +12,9 @@ from functions import Gradients
 from functions.General import *
 import argparse
 import ast
-import TFNetwork
-import TFSummary
-import TFLosses
+import Network
+import Summary
+import Losses
 
 
 default_args = [sys.argv[0], "[16,256,4]", "0.1", "0.8", "300000", "\"AAA\""]
@@ -44,14 +44,14 @@ args, hidden_layers, trainer_id = parse_cli()
 
 
 # Initiailize TF Network and variables
-Qout, inputs = TFNetwork.new_Conv(16, 4)
+Qout, inputs = Network.new_Conv(16, 4)
 Qmean = tf.reduce_mean(Qout)
 Qmax = tf.reduce_max(Qout)
 predict = tf.argmax(Qout, 1)
 
 
 nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
-loss = TFLosses.mse(nextQ, Qout)
+loss = Losses.mse(nextQ, Qout)
 trainer = tf.train.GradientDescentOptimizer(learning_rate=args["learning-rate"])
 updateModel = trainer.minimize(loss)
 
@@ -73,7 +73,7 @@ def epsilon(i):
 		return 0.1
 
 
-summary_op = TFSummary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
+summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
 
 
 with tf.Session() as sess:
@@ -151,7 +151,7 @@ with tf.Session() as sess:
 
 			# Train our network using target and predicted Q values
 			_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: [s], nextQ: targetQ})
-			TFSummary.write_summary_operation(summary, total_steps+steps)
+			Summary.write_summary_operation(summary, total_steps + steps)
 
 			reward_sum += r
 
@@ -167,7 +167,7 @@ with tf.Session() as sess:
 		}
 		total_steps += steps
 
-		TFSummary.write_scalar_summaries([
+		Summary.write_scalar_summaries([
 			("steps", steps),
 			("epsilon", epsilon(i)),
 			("score", game.currState.score),
