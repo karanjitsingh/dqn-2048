@@ -14,95 +14,72 @@ def new_FCN(input_size, hidden_layers, output_size):
 
 	for i, n in enumerate(hidden_layers):
 		weights.append(tf.Variable(tf.truncated_normal([last_layer, n], 0, 0.1)))
-		biases.append(tf.Variable(tf.constant(0.1, shape=[n])))
+		biases.append(tf.Variable(tf.random_normal(stddev=0.1, shape=[n])))
 		activation.append(tf.nn.relu(tf.add(tf.matmul(activation[i], weights[i]), biases[i])))
 		last_layer = n
 
 	weights.append(tf.Variable(tf.truncated_normal([last_layer, output_size], 0, 0.1)))
-	biases.append(tf.Variable(tf.constant(0.1, shape=[output_size])))
+	biases.append(tf.Variable(tf.random_normal(stddev=0.1, shape=[n])))
 
 	return tf.nn.relu(tf.add(tf.matmul(activation[-1], weights[-1]), biases[-1])), inputs1
 
 
-def new_Conv(input_size, output_size):
-
-	inputs1 = tf.placeholder(shape=[None, input_size], dtype=tf.float32)
-
-	def new_weights(shape):
-		return tf.Variable(tf.truncated_normal(shape, stddev=0.1))
-
-	def new_biases(length):
-		return tf.Variable(tf.constant(0.1, shape=[length]))
-
-	def new_conf_layer(input, filter_size, num_filters):
-		shape = [filter_size, filter_size,1,num_filters]
-		weights = new_weights(shape)
-		biases = new_biases(length=num_filters)
-
-		layer=tf.nn.conv2d(input=input,
-						   filter=weights,
-						   strides=[1,1,1,1],
-						   padding='SAME') + biases
-
-		layer = tf.nn.max_pool(value=layer,
-							   ksize=[1,2,2,1],
-							   strides=[1,2,2,1],
-							   padding='SAME')
-
-		layer = tf.nn.sigmoid(layer)
-
-		return layer, weights
+def new_CNN(input_size, output_size):
+	def flatten_layer(layer):
+		layer_shape = layer.get_shape()
+		num_features = np.array(layer_shape[1:4], dtype=int).prod()
+		layer_flat = tf.reshape(layer, [-1, num_features])
+		return layer_flat, num_features
 
 	def new_fc_layer(input,
 					 num_inputs,
 					 num_outputs,
 					 use_relu=True):
-
-		weights = new_weights(shape=[num_inputs, num_outputs])
-		biases = new_biases(length=num_outputs)
+		weights = tf.Variable(tf.truncated_normal(shape=[num_inputs, num_outputs], stddev=0.1))
+		biases = tf.Variable(tf.constant(0.1, shape=[num_outputs]))
 
 		layer = tf.matmul(input, weights) + biases
 
 		if use_relu:
 			layer = tf.nn.relu(layer)
 
-		return layer, inputs1
+		return layer
 
-	def flatten_layer(layer):
+	def new_conf_layer(inputs, filter_size, num_filters, prev_filters=1):
+		shape = [filter_size, filter_size, prev_filters, num_filters]
+		W = tf.Variable(tf.truncated_normal(shape, 0, 0.1))
+		b = tf.Variable(tf.random_normal(stddev=0.1, shape=[num_filters]))
 
-		layer_shape = layer.get_shape()
-		num_features = np.array(layer_shape[1:4], dtype=int).prod()
-		layer_flat = tf.reshape(layer, [-1, num_features])
+		layer = tf.nn.conv2d(
+			input=inputs,
+			filter=W,
+			strides=[1, 1, 1, 1],
+			padding='VALID') + b
+		layer = tf.nn.max_pool(
+			value=layer,
+			ksize=[1, 2, 2, 1],
+			strides=[1, 1, 1, 1],
+			padding='VALID')
 
-		return layer_flat, num_features
+		return layer
 
-	inputs_2d= tf.reshape(inputs1, [-1, 4, 4, 1])
+	inputs = tf.placeholder(shape=[None, input_size], dtype=tf.float32)
+	inputs_2d = tf.reshape(inputs, [-1, 4, 4, 1])
 
-	layer_1, _ = new_conf_layer(inputs_2d, filter_size=2, num_filters=9)
+	layer = new_conf_layer(inputs_2d, 2, 8)
 
-	layer_flat, num_features = flatten_layer(layer_1)
+	layer, features = flatten_layer(layer)
 
-	inputs_2d = tf.reshape(layer_flat, [-1, 6, 6, 1])
+	fc = new_fc_layer(layer, features, 16)
+	fc = new_fc_layer(fc, 16, 4)
 
-	layer_2, _ = new_conf_layer(inputs_2d, filter_size=2, num_filters = 4)
-
-	layer_flat, num_features = flatten_layer(layer_2)
-
-	layer_fc1, _ = new_fc_layer(input = layer_flat,
-							 num_inputs= num_features,
-							 num_outputs= 36)
-
-	layer_fc2, _ = new_fc_layer(input= layer_fc1,
-							 num_inputs= 36,
-							 num_outputs= output_size)
-
-	return layer_fc2, inputs1
+	return fc, inputs
 
 
 def getNetworkFromArgs(arg):
 	if arg[0] == "fcn":
 		outputs, inputs = new_FCN(16, arg[1], 4)
 		return outputs, inputs
-	if arg[0] == "conv":
-		outputs, inputs = new_Conv(16, 4)
+	if arg[0] == "cnn":
+		outputs, inputs = new_CNN(16, 4)
 		return outputs, inputs

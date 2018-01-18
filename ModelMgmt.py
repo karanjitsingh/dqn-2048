@@ -8,10 +8,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 default_args = [
 	sys.argv[0],
-	"[\"conv\"]",
+	"[\"cnn\"]",
 	"0.1",
 	"0.5",
 	"30000",
+	"mse",
 	"1000",
 	"10",
 	"egreedy",
@@ -28,12 +29,13 @@ def parse_cli():
 	parser.add_argument("learning-rate", help="Learning rate of model")
 	parser.add_argument("discount-factor", help="Discount factor of model")
 	parser.add_argument("epochs", help="Number of games to run")
+	parser.add_argument("loss", help="Loss function")
 	parser.add_argument("replay-size", help="Replay memory size")
 	parser.add_argument("batch-size", help="Mini batch size")
 	parser.add_argument("exploration", help="egreedy/softmax")
 	parser.add_argument("epsilon-params", help="Exploration parameter [start, stop, %steps]")
 
-	string_args = ["exploration"]
+	string_args = ["exploration", "loss"]
 
 	args = vars(parser.parse_args())
 

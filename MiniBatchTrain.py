@@ -6,7 +6,7 @@ from functions.General import *
 import Network
 import Summary
 import Exploration
-
+import Losses
 
 args = ModelMgmt.parse_cli()
 
@@ -40,7 +40,7 @@ predict = tf.argmax(Qout, 1)
 
 
 nextQ = tf.placeholder(shape=[None, 4], dtype=tf.float32)
-loss = tf.losses.huber_loss(nextQ, Qout)
+loss = Losses.getLossFromArgs(args["loss"])(nextQ, Qout)
 trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
 updateModel = trainer.minimize(loss)
 
