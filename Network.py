@@ -45,7 +45,7 @@ def new_CNN(input_size, output_size):
 
 		return layer
 
-	def new_conf_layer(inputs, filter_size, num_filters, prev_filters=1):
+	def new_conv_layer(inputs, filter_size, num_filters, prev_filters=1, maxpool=False):
 		shape = [filter_size, filter_size, prev_filters, num_filters]
 		W = tf.Variable(tf.truncated_normal(shape, 0, 0.1))
 		b = tf.Variable(tf.random_normal(stddev=0.1, shape=[num_filters]))
@@ -55,23 +55,26 @@ def new_CNN(input_size, output_size):
 			filter=W,
 			strides=[1, 1, 1, 1],
 			padding='VALID') + b
-		layer = tf.nn.max_pool(
-			value=layer,
-			ksize=[1, 2, 2, 1],
-			strides=[1, 1, 1, 1],
-			padding='VALID')
+
+		if maxpool:
+			layer = tf.nn.max_pool(
+				value=layer,
+				ksize=[1, 2, 2, 1],
+				strides=[1, 1, 1, 1],
+				padding='VALID')
 
 		return layer
 
 	inputs = tf.placeholder(shape=[None, input_size], dtype=tf.float32)
 	inputs_2d = tf.reshape(inputs, [-1, 4, 4, 1])
 
-	layer = new_conf_layer(inputs_2d, 2, 8)
+	layer = new_conv_layer(inputs_2d, 2, 256)
+	layer = new_conv_layer(layer, 2, 128, prev_filters=256)
 
 	layer, features = flatten_layer(layer)
 
-	fc = new_fc_layer(layer, features, 16)
-	fc = new_fc_layer(fc, 16, 4)
+	fc = new_fc_layer(layer, features, 256)
+	fc = new_fc_layer(fc, 256, 4)
 
 	return fc, inputs
 
