@@ -5,7 +5,7 @@ tf.reset_default_graph()
 
 
 def new_FCN(input_size, hidden_layers, output_size):
-	last_layer = 16
+	last_layer = input_size
 	weights = []
 	biases = []
 
@@ -97,3 +97,12 @@ def new_Conv(input_size, output_size):
 							 num_outputs= output_size)
 
 	return layer_fc2, inputs1
+
+
+def getNetworkFromArgs(arg):
+	if arg[0] == "fcn":
+		outputs, inputs = new_FCN(16, arg[1], 4)
+		return outputs, inputs
+	if arg[0] == "conv":
+		outputs, inputs = new_Conv(16, 4)
+		return outputs, inputs

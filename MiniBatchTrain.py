@@ -8,11 +8,32 @@ import Summary
 import Exploration
 
 
-args, hidden_layers, trainer_id = ModelMgmt.parse_cli()
+args = ModelMgmt.parse_cli()
+
+#  Set learning parameters
+gamma = args["discount-factor"]
+num_episodes = args["epochs"]
+learning_rate = args["learning-rate"]
+[eps_start, eps_stop, eps_steps] = args["epsilon-params"]
+trainer_id = args["trainer-id"]
+memory_size = args["replay-size"]
+exploration = Exploration.getExplorationFromArgs(args["exploration"])
+batch_size = args["batch-size"]
+
+# Random action parameter
+_epsilon = Gradients.Exponential(start=eps_start, stop=eps_stop)
+
+
+def epsilon(i):
+	# Exponentially decreasing epsilon to 0.1 for first 25% epochs, constant value of 0.1 from there on
+	if i<num_episodes/(100.0/eps_steps):
+		return _epsilon(i/(num_episodes/(100.0/eps_steps)))
+	else:
+		return eps_stop
 
 
 # Initiailize TF Network and variables
-Qout, inputs = Network.new_FCN(16, hidden_layers, 4)
+Qout, inputs = Network.getNetworkFromArgs(args["architecture"])
 Qmean = tf.reduce_mean(Qout)
 Qmax = tf.reduce_max(Qout)
 predict = tf.argmax(Qout, 1)
@@ -20,31 +41,14 @@ predict = tf.argmax(Qout, 1)
 
 nextQ = tf.placeholder(shape=[None, 4], dtype=tf.float32)
 loss = tf.losses.huber_loss(nextQ, Qout)
-trainer = tf.train.GradientDescentOptimizer(learning_rate=args["learning-rate"])
+trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
 updateModel = trainer.minimize(loss)
 
 init = tf.global_variables_initializer()
 
-#  Set learning parameters
-gamma = args["discount-factor"]
-num_episodes = args["epochs"]
-
-# Random action parameter
-_epsilon = Gradients.Exponential(start=100, stop=0.5)
-
-def epsilon(i):
-	# Exponentially decreasing epsilon to 0.1 for first 25% epochs, constant value of 0.1 from there on
-	if i<num_episodes/4.0:
-		return _epsilon(i/(num_episodes/4.0))
-	else:
-		return 0.1
-
-
 summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
 
-
-memory = ReplayMemory(10000)
-
+memory = ReplayMemory(memory_size)
 
 with tf.Session() as sess:
 	sess.run(init)
@@ -89,7 +93,7 @@ with tf.Session() as sess:
 
 			# Feed-forward
 			if memory.full:
-				replay = memory.sample(15)
+				replay = memory.sample(batch_size)
 				state_list = []
 				target_list = []
 
@@ -129,7 +133,7 @@ with tf.Session() as sess:
 			("steps", steps),
 			("epsilon", epsilon(i)),
 			("score", game.currState.score),
-			("rand-steps", 1 - float(rand_steps)/steps),
+			("rand-steps", float(rand_steps)/steps),
 			("maxtile", maxtile),
 			# ("invalid-steps", steps)
 		], i)

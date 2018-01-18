@@ -18,11 +18,3 @@ class Linear:
 
 	def __call__(self, step):
 		return self.start - (self.start - self.stop) * step
-
-
-class Const:
-	def __init__(self, val):
-		self.val = val
-
-	def __call__(self, unused):
-		return self.val

@@ -1,6 +1,7 @@
 import numpy as np
 import random
 
+
 def softmax(action, allQ, i, epsilon, game):
 	original_action = action[0]
 
@@ -14,8 +15,6 @@ def softmax(action, allQ, i, epsilon, game):
 	logits_sum = np.sum(logits)
 	prob = logits/logits_sum
 
-	invalid_action = []
-
 	action[0] = np.random.choice([0, 1, 2, 3], p=prob[0])
 	nextstate = game.transition(action[0])
 
@@ -28,7 +27,7 @@ def softmax(action, allQ, i, epsilon, game):
 				action[0] = np.random.choice([0, 1, 2, 3], p=prob[0])
 			nextstate = game.transition(action[0])
 
-	if action[0] == original_action:
+	if action[0] != original_action:
 		rand_action = True
 
 	return nextstate, action[0], rand_action, invalid_action
@@ -62,5 +61,11 @@ def egreedy(action, allQ, i, epsilon, game):
 				action[0] = sorted_action[policy_action]
 			nextstate = game.transition(action[0])
 
-
 	return nextstate, action[0], random_action, invalid_action
+
+
+def getExplorationFromArgs(args):
+	if args == "egreedy":
+		return egreedy
+	if args == "softmax":
+		return softmax
