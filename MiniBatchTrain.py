@@ -75,14 +75,13 @@ with tf.Session() as sess:
 			# Choose an action by greedily (with e chance of random action) from the Q-network
 			a, allQ = sess.run([predict, Qout], feed_dict={inputs: [s]})
 
-			nextstate, a[0], ra, ia = Exploration.egreedy(a, allQ, i, epsilon, game)
+			nextstate, a[0], ra, ia = exploration(a, allQ, i, epsilon, game)
 
 			# Get new state and reward from environment
 
 			r = reward(currstate, nextstate)
 			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
 			if r is not 0:
-				# r = np.log2(nextstate.score - currstate.score)/10.0
 				r = np.log2(nextstate.score - currstate.score)/2.0
 			reward_sum += r
 
