@@ -19,6 +19,26 @@ trainer_id = args["trainer-id"]
 memory_size = args["replay-size"]
 exploration = Exploration.getExplorationFromArgs(args["exploration"])
 batch_size = args["batch-size"]
+update_mode = args["update-mode"]
+
+
+# Initialize TF Network and variables
+Qout, inputs = Network.getNetworkFromArgs(args["architecture"])
+Qmean = tf.reduce_mean(Qout)
+Qmax = tf.reduce_max(Qout)
+predict = tf.argmax(Qout, 1)
+
+# Initialize TF output and optimizer
+nextQ = tf.placeholder(shape=[None, 4], dtype=tf.float32)
+loss = Losses.getLossFromArgs(args["loss"])(nextQ, Qout)
+trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+updateModel = trainer.minimize(loss)
+
+init = tf.global_variables_initializer()
+
+# Initialize tensorboard summary
+summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
+
 
 # Random action parameter
 _epsilon = Gradients.Exponential(start=eps_start, stop=eps_stop)
@@ -32,23 +52,36 @@ def epsilon(i):
 		return eps_stop
 
 
-# Initiailize TF Network and variables
-Qout, inputs = Network.getNetworkFromArgs(args["architecture"])
-Qmean = tf.reduce_mean(Qout)
-Qmax = tf.reduce_max(Qout)
-predict = tf.argmax(Qout, 1)
-
-
-nextQ = tf.placeholder(shape=[None, 4], dtype=tf.float32)
-loss = Losses.getLossFromArgs(args["loss"])(nextQ, Qout)
-trainer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
-updateModel = trainer.minimize(loss)
-
-init = tf.global_variables_initializer()
-
-summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
-
 memory = ReplayMemory(memory_size)
+
+
+def update_model():
+	if memory.full:
+		replay = memory.sample(batch_size)
+		state_list = []
+		target_list = []
+
+		for sample in replay:
+			state = sample[0]
+			action = sample[1]
+			rr = sample[2]
+			next_state = sample[3]
+
+			_, allQ = sess.run([predict, Qout], feed_dict={inputs: [state]})
+			Q1 = sess.run(Qout, feed_dict={inputs: [next_state]})
+
+			# Obtain maxQ' and set our target value for chosen action.
+			maxQ1 = np.max(Q1)
+			targetQ = allQ
+
+			targetQ[0, action] = rr + gamma * maxQ1
+
+			state_list.insert(0, state)
+			target_list.insert(0, targetQ[0])
+
+		_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: state_list, nextQ: target_list})
+		Summary.write_summary_operation(summary, total_steps + steps)
+
 
 with tf.Session() as sess:
 	sess.run(init)
@@ -75,46 +108,31 @@ with tf.Session() as sess:
 			# Choose an action by greedily (with e chance of random action) from the Q-network
 			a, allQ = sess.run([predict, Qout], feed_dict={inputs: [s]})
 
-			nextstate, a[0], ra, ia = exploration(a, allQ, i, epsilon, game)
+			possible_states, action, ra, invalid_prediction = exploration(a, allQ, i, epsilon, game)
 
-			# Get new state and reward from environment
+			if ra:
+				rand_steps += 1
+			if invalid_prediction:
+				invalid_steps += 1
 
-			r = reward(currstate, nextstate)
-			maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
-			if r is not 0:
-				r = np.log2(nextstate.score - currstate.score)/2.0
-			reward_sum += r
+			reward_list = []
+			for k, nextstate in enumerate(possible_states):
+				r = reward(currstate, nextstate)
+				reward_list.insert(k, r)
+				if r is not 0:
+					r = np.log2(nextstate.score - currstate.score)/2.0
+
+			reward_sum += reward_list[action]
+
+			nextstate = possible_states[action]
 
 			s1 = normalize(game.grid_to_input())
 			halt = nextstate.halt
 
-			memory.push([s, a[0], r, s1])
+			memory.push([s, action, reward_list, possible_states])
 
-			# Feed-forward
-			if memory.full:
-				replay = memory.sample(batch_size)
-				state_list = []
-				target_list = []
-
-				for sample in replay:
-					state = sample[0]
-					action = sample[1]
-					rr = sample[2]
-					next_state = sample[3]
-
-					_, allQ = sess.run([predict, Qout], feed_dict={inputs: [state]})
-					Q1 = sess.run(Qout, feed_dict={inputs: [next_state]})
-
-					# Obtain maxQ' and set our target value for chosen action.
-					maxQ1 = np.max(Q1)
-					targetQ = allQ
-					targetQ[0, action] = rr + gamma*maxQ1
-
-					state_list.insert(0, state)
-					target_list.insert(0, targetQ[0])
-
-				_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: state_list, nextQ: target_list})
-				Summary.write_summary_operation(summary, total_steps + steps)
+			# update step
+			update_model()
 
 			s = s1
 

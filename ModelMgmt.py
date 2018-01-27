@@ -16,6 +16,7 @@ default_args = [
 	"1000",
 	"10",
 	"egreedy",
+	"all",
 	"[1,0.1,15]"
 ]
 
@@ -25,7 +26,7 @@ sys.argv = default_args
 
 def parse_cli():
 	parser = argparse.ArgumentParser()
-	parser.add_argument("architecture", help="[\"fcn\"/\"conv\", ...]")
+	parser.add_argument("architecture", help="[\"fcn\"/\"cnn\", ...]")
 	parser.add_argument("learning-rate", help="Learning rate of model")
 	parser.add_argument("discount-factor", help="Discount factor of model")
 	parser.add_argument("epochs", help="Number of games to run")
@@ -33,9 +34,10 @@ def parse_cli():
 	parser.add_argument("replay-size", help="Replay memory size")
 	parser.add_argument("batch-size", help="Mini batch size")
 	parser.add_argument("exploration", help="egreedy/softmax")
+	parser.add_argument("update-mode", help="Update mode for q learning formula")
 	parser.add_argument("epsilon-params", help="Exploration parameter [start, stop, %steps]")
 
-	string_args = ["exploration", "loss"]
+	string_args = ["exploration", "loss", "update-mode"]
 
 	args = vars(parser.parse_args())
 

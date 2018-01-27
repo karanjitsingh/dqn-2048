@@ -96,8 +96,12 @@ class Game(object):
 
 			empty_tiles += len(zeroes)
 
-		if empty_tiles:
+		if empty_tiles > 1:
 			full = False
+
+		if empty_tiles > 0 and valid:
+			grid = Game.add_random(grid)
+			empty_tiles -= 1
 
 		if direction[1] != 0:
 			grid = map(list, zip(*grid))
@@ -110,10 +114,6 @@ class Game(object):
 					if grid[j][i] == 0 or grid[j][i] == grid[j + 1][i] or grid[i][j] == grid[i][j + 1]:
 						halt = False
 						break
-
-		if not full and valid:
-			grid = Game.add_random(grid)
-			empty_tiles -= 1
 
 		return State(grid, state.score+score, empty_tiles, halt, full, valid)
 
@@ -165,14 +165,3 @@ class Game(object):
 		grid = self.currState.grid
 		for i in range(len(grid)):
 			print grid[i]
-
-
-# default = [
-# 	[4, 2, 4, 8],
-# 	[2, 4, 16, 32],
-# 	[4, 16, 32, 128],
-# 	[0, 2, 64, 2]
-# ]
-#
-# game = Game(4, grid=default)
-# game.transition(direction=0).printstate()
