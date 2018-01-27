@@ -1,6 +1,6 @@
 import ModelMgmt
 import tensorflow as tf
-from Game import Game
+import Game
 from functions import Gradients
 from functions.General import *
 import Network
@@ -64,8 +64,10 @@ def update_model():
 		for sample in replay:
 			state = sample[0]
 			action = sample[1]
-			rr = sample[2]
-			next_state = sample[3]
+			reward_list = sample[2]
+			possible_states = sample[3]
+
+			next_state = possible_states[action]
 
 			_, allQ = sess.run([predict, Qout], feed_dict={inputs: [state]})
 			Q1 = sess.run(Qout, feed_dict={inputs: [next_state]})
@@ -74,7 +76,7 @@ def update_model():
 			maxQ1 = np.max(Q1)
 			targetQ = allQ
 
-			targetQ[0, action] = rr + gamma * maxQ1
+			targetQ[0, action] = reward_list[action] + gamma * maxQ1
 
 			state_list.insert(0, state)
 			target_list.insert(0, targetQ[0])
@@ -91,8 +93,8 @@ with tf.Session() as sess:
 
 	for i in range(num_episodes):
 		# Reset environment and get first new observation
-		game = Game(4)
-		s = normalize(game.grid_to_input())
+		state = Game.new_game(4)
+		s = normalize(state.grid_to_input())
 		reward_sum = 0
 		halt = False
 		steps = 0
@@ -101,14 +103,13 @@ with tf.Session() as sess:
 		# The Q-Network
 		while not halt:
 			steps += 1
-			currstate = game.currState
 			if i == 0:
-				game.printgrid()
+				state.printstate()
 				print ""
 			# Choose an action by greedily (with e chance of random action) from the Q-network
 			a, allQ = sess.run([predict, Qout], feed_dict={inputs: [s]})
 
-			possible_states, action, ra, invalid_prediction = exploration(a, allQ, i, epsilon, game)
+			possible_states, action, ra, invalid_prediction = exploration(a[0], allQ, i, epsilon, state)
 
 			if ra:
 				rand_steps += 1
@@ -117,16 +118,16 @@ with tf.Session() as sess:
 
 			reward_list = []
 			for k, nextstate in enumerate(possible_states):
-				r = reward(currstate, nextstate)
+				r = reward(state, nextstate)
 				reward_list.insert(k, r)
 				if r is not 0:
-					r = np.log2(nextstate.score - currstate.score)/2.0
+					r = np.log2(nextstate.score - state.score)/2.0
 
 			reward_sum += reward_list[action]
 
 			nextstate = possible_states[action]
 
-			s1 = normalize(game.grid_to_input())
+			s1 = normalize(nextstate.grid_to_input())
 			halt = nextstate.halt
 
 			memory.push([s, action, reward_list, possible_states])
@@ -135,11 +136,12 @@ with tf.Session() as sess:
 			update_model()
 
 			s = s1
+			state = nextstate
 
-		maxtile = max([max(game.currState.grid[k]) for k in range(len(game.currState.grid))])
+		maxtile = max([max(state.grid[k]) for k in range(len(state.grid))])
 		stat = {
 			'max-tile': maxtile,
-			'score': game.currState.score,
+			'score': state.score,
 			'steps': steps,
 			'r': reward_sum,
 			'rand-steps': "{0:.3f}".format(float(rand_steps) / steps)
@@ -149,7 +151,7 @@ with tf.Session() as sess:
 		Summary.write_scalar_summaries([
 			("steps", steps),
 			("epsilon", epsilon(i)),
-			("score", game.currState.score),
+			("score", state.score),
 			("rand-steps", float(rand_steps)/steps),
 			("maxtile", maxtile),
 			# ("invalid-steps", steps)
