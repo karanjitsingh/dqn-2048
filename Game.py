@@ -154,5 +154,4 @@ def transition(state, direction=None):
 	else:
 		direction = getkey()
 
-	state = get_next_state(state, direction)
-	return state
+	return get_next_state(state, direction)

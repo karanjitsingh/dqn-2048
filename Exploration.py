@@ -7,9 +7,9 @@ def getAllStates(state):
 	state_list = []
 	invalid_list = []
 	for i in range(4):
-		state = Game.transition(state, i)
-		state_list.insert(i, state)
-		invalid_list.insert(i, not state.valid)
+		next_state = Game.transition(state, i)
+		state_list.insert(i, next_state)
+		invalid_list.insert(i, not next_state.valid)
 
 	return state_list, invalid_list
 
@@ -39,10 +39,12 @@ def softmax(action, allQ, i, epsilon, state):
 	if action != original_action:
 		rand_action = True
 
-	return nextstate, action, rand_action, invalid_list[action]
+	return state_list, action, rand_action, invalid_list[original_action]
 
 
 def egreedy(action, allQ, i, epsilon, state):
+
+	original_action = action
 
 	random_action = False
 	policy_action = 0
@@ -68,7 +70,7 @@ def egreedy(action, allQ, i, epsilon, state):
 
 			nextstate = state_list[action]
 
-	return state_list, action, random_action, invalid_list
+	return state_list, action, random_action, invalid_list[original_action]
 
 
 def getExplorationFromArgs(args):
