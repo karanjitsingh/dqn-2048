@@ -19,12 +19,12 @@ def init_summary_writer(training_id, var_list):
 		for tuple in var_list:
 			tf.summary.scalar(tuple[0], tuple[1])
 
-	# if os.path.isdir(log_path):
-	# 	try:
-	# 		shutil.rmtree(log_path)
-	# 	except:
-	# 		exit()
-	# 		pass
+	if os.path.isdir(log_path):
+		try:
+			shutil.rmtree(log_path)
+		except:
+			exit()
+			pass
 
 	global writer
 	global trainer_id

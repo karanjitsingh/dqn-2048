@@ -20,9 +20,11 @@ default_args = [
 	"[1,0.1,15]"
 ]
 
-print "Using default arguments: ", default_args
-sys.argv = default_args
-
+if len(sys.argv) == 1:
+	print "Using default arguments: ", default_args
+	sys.argv = default_args
+else:
+	print "Using given arguments: ", sys.argv
 
 def parse_cli():
 	parser = argparse.ArgumentParser()
@@ -35,7 +37,7 @@ def parse_cli():
 	parser.add_argument("batch-size", help="Mini batch size")
 	parser.add_argument("exploration", help="egreedy/softmax")
 	parser.add_argument("update-mode", help="Update mode for q learning formula")
-	parser.add_argument("epsilon-params", help="Exploration parameter [start, stop, %steps]")
+	parser.add_argument("epsilon-params", help="Exploration parameter [start, stop, percent steps]")
 
 	string_args = ["exploration", "loss", "update-mode"]
 
