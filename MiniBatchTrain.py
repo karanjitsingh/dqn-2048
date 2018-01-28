@@ -62,23 +62,37 @@ def update_model():
 		target_list = []
 
 		for sample in replay:
-			state = sample[0]
+			input = sample[0]
 			action = sample[1]
 			reward_list = sample[2]
 			possible_states = sample[3]
+			targetQ = []
 
-			next_state = possible_states[action]
+			_, allQ = sess.run([predict, Qout], feed_dict={inputs: [input]})
 
-			_, allQ = sess.run([predict, Qout], feed_dict={inputs: [state]})
-			Q1 = sess.run(Qout, feed_dict={inputs: [next_state]})
+			if update_mode == "single":
+				next_state = possible_states[action]
+				next_input = normalize(next_state.grid_to_input())
+				Q1 = sess.run(Qout, feed_dict={inputs: [next_input]})
+				maxQ1 = np.max(Q1)
+				targetQ = allQ
 
-			# Obtain maxQ' and set our target value for chosen action.
-			maxQ1 = np.max(Q1)
-			targetQ = allQ
+				targetQ[0, action] = reward_list[action] + \
+									 (0 if next_state.halt else gamma * maxQ1)
 
-			targetQ[0, action] = reward_list[action] + gamma * maxQ1
+			elif update_mode == "all":
+				next_inputs = [normalize(s.grid_to_input()) for s in possible_states]
+				Q1 = sess.run(Qout, feed_dict={inputs: next_inputs})
+				maxQs = [np.max(Q) for Q in Q1]
 
-			state_list.insert(0, state)
+				targetQ = allQ
+
+				for k in range(4):
+					if possible_states[k].valid:
+						targetQ[0, k] = reward_list[action] + \
+							(0 if possible_states[k].halt else gamma * maxQs[k])
+
+			state_list.insert(0, input)
 			target_list.insert(0, targetQ[0])
 
 		_, summary = sess.run([updateModel, summary_op], feed_dict={inputs: state_list, nextQ: target_list})
@@ -94,14 +108,15 @@ with tf.Session() as sess:
 	for i in range(num_episodes):
 		# Reset environment and get first new observation
 		state = Game.new_game(4)
-		s = normalize(state.grid_to_input())
 		reward_sum = 0
-		halt = False
 		steps = 0
 		rand_steps = 0
 		invalid_steps = 0
 		# The Q-Network
-		while not halt:
+		while not state.halt:
+
+			s = normalize(state.grid_to_input())
+
 			steps += 1
 			if i == 0:
 				state.printstate()
@@ -125,18 +140,13 @@ with tf.Session() as sess:
 
 			reward_sum += reward_list[action]
 
-			nextstate = possible_states[action]
-
-			s1 = normalize(nextstate.grid_to_input())
-			halt = nextstate.halt
-
+			# [normailzed input, action_taken, rewards for all action, all possible states]
 			memory.push([s, action, reward_list, possible_states])
 
 			# update step
 			update_model()
 
-			s = s1
-			state = nextstate
+			state = possible_states[action]
 
 		maxtile = max([max(state.grid[k]) for k in range(len(state.grid))])
 		stat = {
