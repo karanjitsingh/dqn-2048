@@ -134,9 +134,9 @@ with tf.Session() as sess:
 			reward_list = []
 			for k, nextstate in enumerate(possible_states):
 				r = reward(state, nextstate)
-				reward_list.insert(k, r)
 				if r is not 0:
 					r = np.log2(nextstate.score - state.score)/2.0
+				reward_list.insert(k, r)
 
 			reward_sum += reward_list[action]
 
