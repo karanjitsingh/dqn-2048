@@ -89,7 +89,7 @@ def update_model():
 
 				for k in range(4):
 					if possible_states[k].valid:
-						targetQ[0, k] = reward_list[action] + \
+						targetQ[0, k] = reward_list[k] + \
 							(0 if possible_states[k].halt else gamma * maxQs[k])
 
 			state_list.insert(0, input)
