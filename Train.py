@@ -9,7 +9,7 @@ import Exploration
 import Losses
 
 
-def MiniBatchTrain(config):
+def MiniBatchTrain(config, load_model=False):
 
 	#  Set learning parameters
 	gamma = config["discount-factor"]
@@ -37,23 +37,21 @@ def MiniBatchTrain(config):
 	init = tf.global_variables_initializer()
 
 	# Initialize tensorboard summary
-	summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss), ("Qmean", Qmean), ("Qmax", Qmax)])
-
+	summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss),
+																			   ("Qmean", Qmean),
+																			   ("Qmax", Qmax)])
 
 	# Random action parameter
 	_epsilon = Gradients.Exponential(start=eps_start, stop=eps_stop)
 
-
-	def epsilon(i):
+	def epsilon(step):
 		# Exponentially decreasing epsilon to 0.1 for first 25% epochs, constant value of 0.1 from there on
-		if i<num_episodes/(100.0/eps_steps):
-			return _epsilon(i/(num_episodes/(100.0/eps_steps)))
+		if step < num_episodes/(100.0/eps_steps):
+			return _epsilon(step/(num_episodes/(100.0/eps_steps)))
 		else:
 			return eps_stop
 
-
 	memory = ReplayMemory(memory_size)
-
 
 	def update_model():
 		if memory.full:

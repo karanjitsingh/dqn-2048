@@ -38,7 +38,7 @@ def parse_cli():
 	new_mode.add_argument("--no-gpu", action='store_true', help="Force training on CPU")
 
 	load_mode = subparsers.add_parser("load", help="Train saved model")
-	load_mode.add_argument("--path", "Path to saved model")
+	load_mode.add_argument("--model-id", help="Name of saved model")
 	load_mode.add_argument("--json-config", help="Path to JSON config file")
 	load_mode.add_argument("--no-gpu", action='store_true', help="Force training on CPU")
 
@@ -73,53 +73,64 @@ default_config = {
 config = None
 
 
-if cli.cmd == "new" or cli.cmd == "load":
+def get_model_id():
+	return input("New model id: ")
+
+
+def cli_options(cli):
 	if cli.no_gpu:
 		disable_gpu()
+
+	global config
 	if cli.json_config:
 		config = load_json(cli.json_config)
 		print "\'" + cli.json_config + "\':"
 		print json.dumps(default_config, indent=2)
 	else:
-		print "Using default config: "
+		print "\nUsing default config: "
 		print json.dumps(default_config, indent=2)
 		config = default_config
-	if cli.cmd == "load":
-		print cli
 
-	print ""
+
+def train_new(cli):
+	cli_options(cli)
+	Train.MiniBatchTrain(config)
+
+
+def train_saved(cli):
+
+	if cli.model_id:
+		if not os.path.isdir("./models/" + cli.model_id):
+			print "No such model " + cli.model_id
+			exit(1)
+
+		config['model-id'] = cli.model_id
+
+		Train.MiniBatchTrain(config, load_model=True)
+	else:
+		print "Choose saved model:"
+
+		models = os.listdir('./models')
+
+		for i, id in enumerate(models):
+			print "[" + str(i) + "]\t" + id
+		index = -1
+		while index < 0 or index >= len(models):
+			index = input(": ")
+		config['model-id'] = models[index]
+
+	cli_options(cli)
+
+	Train.MiniBatchTrain(config, load_model=True)
+
+
+if cli.cmd == "new":
+	import Train
+	train_new(cli)
+elif cli.cmd == "load":
+	import Train
+	train_saved(cli)
 elif cli.cmd == "default-config":
 	print default_config
 elif cli.cmd == "json-help":
 	print_json_help()
-
-#
-#
-# if len(sys.argv) == 1:
-# 	print "Using default config: ", default_config
-# 	config = default_config
-# elif len(sys.argv) == 2:
-# 	json_path = sys.argv[1]
-# 	data = None
-# 	try:
-# 		config = json.load(open(json_path))
-# 	except ValueError:
-# 		print "Couldn't load JSON:", ValueError.message
-# 		exit(1)
-#
-# 	if set(data.keys()) != set(default_config.keys()):
-# 		print "Invalid JSON"
-# 		exit(1)
-#
-# 	print "Using config: ", config
-# else:
-# 	print "Using given arguments: ", sys.argv
-# 	config = parse_cli()
-#
-#
-# #
-# # def save_model():
-# #
-# # def load_model():
-# #
-# #
