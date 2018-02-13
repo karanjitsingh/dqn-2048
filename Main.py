@@ -28,19 +28,23 @@ def print_json_help():
 	print "", ws(20, "epsilon-params"), "Exploration parameter [start, stop, percent steps]"
 
 
+def define_basic_arguments(parser):
+	parser.add_argument("--json-config", help="Path to JSON config file")
+	parser.add_argument("--no-gpu", action='store_true', help="Force training on CPU")
+	parser.add_argument("--tensorboard", help="PORT")
+
+
 def parse_cli():
 	parser = argparse.ArgumentParser( )
 
 	subparsers = parser.add_subparsers(dest='cmd')
 
 	new_mode = subparsers.add_parser("new", help='Train a new model')
-	new_mode.add_argument("--json-config", help="Path to JSON config file")
-	new_mode.add_argument("--no-gpu", action='store_true', help="Force training on CPU")
+	define_basic_arguments(new_mode)
 
 	load_mode = subparsers.add_parser("load", help="Train saved model")
 	load_mode.add_argument("--model-id", help="Name of saved model")
-	load_mode.add_argument("--json-config", help="Path to JSON config file")
-	load_mode.add_argument("--no-gpu", action='store_true', help="Force training on CPU")
+	define_basic_arguments(load_mode)
 
 	subparsers.add_parser("default-config", help="Print default config")
 	subparsers.add_parser("json-help", help="JSON config help")
@@ -74,13 +78,10 @@ config = None
 
 
 def get_model_id():
-	return input("New model id: ")
+	return raw_input("New model id: ")
 
 
 def cli_options(cli):
-	if cli.no_gpu:
-		disable_gpu()
-
 	global config
 	if cli.json_config:
 		config = load_json(cli.json_config)
@@ -91,9 +92,19 @@ def cli_options(cli):
 		print json.dumps(default_config, indent=2)
 		config = default_config
 
+	if cli.no_gpu:
+		disable_gpu()
+	if cli.tensorboard:
+		config["tensorboard"] = cli.tensorboard
+	else:
+		config["tensorboard"] = ""
+
 
 def train_new(cli):
 	cli_options(cli)
+
+	config["model-id"] = get_model_id()
+
 	Train.MiniBatchTrain(config)
 
 

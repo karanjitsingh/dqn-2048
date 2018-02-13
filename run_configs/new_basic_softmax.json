@@ -1,0 +1,12 @@
+{
+	"architecture" 		: ["cnn"],
+	"learning-rate" 	: 0.01,
+	"discount-factor" 	: 0.99,
+	"epochs" 			: 100000,
+	"loss" 				: "huber",
+	"replay-size" 		: 10000,
+	"batch-size" 		: 5,
+	"exploration" 		: "softmax",
+	"update-mode" 		: "all",
+	"epsilon-params" 	: [10, 1, 20]
+}

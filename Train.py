@@ -1,4 +1,3 @@
-import main
 import tensorflow as tf
 import Game
 from functions import Gradients
@@ -16,11 +15,12 @@ def MiniBatchTrain(config, load_model=False):
 	num_episodes = config["epochs"]
 	learning_rate = config["learning-rate"]
 	[eps_start, eps_stop, eps_steps] = config["epsilon-params"]
-	trainer_id = config["trainer-id"]
+	model_id = config["model-id"]
 	memory_size = config["replay-size"]
 	exploration = Exploration.getExplorationFromArgs(config["exploration"])
 	batch_size = config["batch-size"]
 	update_mode = config["update-mode"]
+	tensorboard_port = config["tensorboard"]
 
 	# Initialize TF Network and variables
 	Qout, inputs = Network.getNetworkFromArgs(config["architecture"])
@@ -37,9 +37,11 @@ def MiniBatchTrain(config, load_model=False):
 	init = tf.global_variables_initializer()
 
 	# Initialize tensorboard summary
-	summary_op = Summary.init_summary_writer(training_id=trainer_id, var_list=[("loss", loss),
-																			   ("Qmean", Qmean),
-																			   ("Qmax", Qmax)])
+	summary_op = Summary.init_summary_writer(model_name=model_id,
+											 var_list=[("loss", loss),
+													   ("Qmean", Qmean),
+													   ("Qmax", Qmax)],
+											 tb_port=tensorboard_port)
 
 	# Random action parameter
 	_epsilon = Gradients.Exponential(start=eps_start, stop=eps_stop)

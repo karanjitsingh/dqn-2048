@@ -68,13 +68,14 @@ def new_CNN(input_size, output_size):
 	inputs = tf.placeholder(shape=[None, input_size], dtype=tf.float32)
 	inputs_2d = tf.reshape(inputs, [-1, 4, 4, 1])
 
-	layer = new_conv_layer(inputs_2d, 2, 256)
-	layer = new_conv_layer(layer, 2, 128, prev_filters=256)
+	layer = new_conv_layer(inputs_2d, 2, 512)
+	layer = new_conv_layer(layer, 2, 512, prev_filters=512)
 
 	layer, features = flatten_layer(layer)
 
-	fc = new_fc_layer(layer, features, 256)
-	fc = new_fc_layer(fc, 256, 4)
+	fc = new_fc_layer(layer, features, 1024)
+	fc = new_fc_layer(fc, 1024, 1024)
+	fc = new_fc_layer(fc, 1024, 4)
 
 	return fc, inputs
 

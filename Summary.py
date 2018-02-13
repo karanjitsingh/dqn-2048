@@ -1,4 +1,6 @@
+from subprocess import Popen
 import tensorflow as tf
+import webbrowser
 import shutil
 import sys
 import os
@@ -11,11 +13,11 @@ else:
 print log_path
 
 writer = None
-trainer_id = ''
+model_id = ''
 
 
-def init_summary_writer(training_id, var_list):
-	with tf.name_scope(training_id):
+def init_summary_writer(model_name, var_list, tb_port):
+	with tf.name_scope(model_name):
 		for tuple in var_list:
 			tf.summary.scalar(tuple[0], tuple[1])
 
@@ -25,12 +27,22 @@ def init_summary_writer(training_id, var_list):
 		except:
 			exit()
 			pass
+	else:
+		while not os.path.isdir(log_path):
+			os.makedirs(log_path)
 
 	global writer
-	global trainer_id
+	global model_id
 
-	trainer_id = training_id
+	model_id = model_name
 	writer = tf.summary.FileWriter(log_path, graph=tf.get_default_graph())
+
+	print os.path.abspath(log_path)
+
+	if tb_port:
+		Popen(["tensorboard", "--logdir=" + os.path.abspath(log_path), "--port="+tb_port])
+		webbrowser.open("http://localhost:"+tb_port)
+
 
 	return tf.summary.merge_all()
 
@@ -42,7 +54,7 @@ def write_scalar_summaries(summary_list, step):
 
 	for t in summary_list:
 		s = tf.Summary(value=[
-			tf.Summary.Value(tag=str(trainer_id + "/" + t[0]), simple_value=t[1]),
+			tf.Summary.Value(tag=str(model_id + "/" + t[0]), simple_value=t[1]),
 		])
 
 		writer.add_summary(s, step)
